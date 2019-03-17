@@ -8,11 +8,14 @@ DallasTemperature sensors(&oneWire);
 
 const int m1a = 32; // motor 1 - porta Hall Sala
 const int m1b = 33;
+boolean open1 = false;
 const int m2a = 14; // motor 2 - porta Sala Cozinha
 const int m2b = 12;
+boolean open2 = false;
 const int m3a = 15; // motor 3 - cortinas
 const int m3b = 2;
-  
+boolean open7 = false;
+
 const int r1 = 25;  // placa de Peltier
 const int r2 = 26;  // resistência do quarto
 const int r3 = 27;  // resistência da casa de banho
@@ -37,7 +40,7 @@ void setup() {
   Serial.println("Hello");
 
   sensors.begin();
-  
+
   pinMode(l1, INPUT);
   pinMode(l2, INPUT);
 
@@ -60,4 +63,109 @@ void setup() {
 }
 
 void loop() {
+}
+
+void serialEvent() {
+  // o que fazer quando um valor é introduzido pelo computador
+  serialFlush();
+}
+
+void door(int whichDoor, boolean whichState) {
+  switch (whichDoor) {
+    case 0:
+      if (whichState) {
+        entrada.write(90);
+      }
+      else {
+        entrada.write(0);
+      }
+      break;
+    case 1:
+      if (whichState) {
+        if (!open1) {
+          digitalWrite(m1a, HIGH);
+          delay(2500);
+          digitalWrite(m1a, LOW);
+        }
+      }
+      else {
+        if (open1) {
+          digitalWrite(m1b, HIGH);
+          delay(2500);
+          digitalWrite(m1b, LOW);
+        }
+      }
+      break;
+    case 2:
+      if (whichState) {
+        if (!open2) {
+          digitalWrite(m2a, HIGH);
+          delay(2500);
+          digitalWrite(m2a, LOW);
+        }
+      }
+      else {
+        if (open2) {
+          digitalWrite(m2b, HIGH);
+          delay(2500);
+          digitalWrite(m2b, LOW);
+        }
+      }
+      break;
+    case 3:
+      if (whichState) {
+        cozinha.write(90);
+      }
+      else {
+        cozinha.write(0);
+      }
+      break;
+    case 4:
+      if (whichState) {
+        quarto.write(90);
+      }
+      else {
+        quarto.write(0);
+      }
+      break;
+    case 5:
+      if (whichState) {
+        casaBanho.write(90);
+      }
+      else {
+        casaBanho.write(0);
+      }
+      break;
+    case 6:
+      if (whichState) {
+        casaBanho2.write(90);
+      }
+      else {
+        casaBanho2.write(0);
+      }
+      break;
+    case 7:
+      if (whichState) {
+        if (!open7) {
+          digitalWrite(m3a, HIGH);
+          delay(2500);
+          digitalWrite(m3a, LOW);
+        }
+      }
+      else {
+        if (open7) {
+          digitalWrite(m3b, HIGH);
+          delay(2500);
+          digitalWrite(m3b, LOW);
+        }
+      }
+      break;
+  }
+}
+
+void serialFlush() {
+  // chamar esta função SEMPRE no fim do tratamento do input
+  while (Serial.available() > 0) {
+    char c = Serial.read();
+  }
 }
