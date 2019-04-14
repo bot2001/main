@@ -1,0 +1,8 @@
+Model: TEC1-12706.
+Size: 40mm x 40mm x 3.6mm.
+Working current: 4.3-4.6 A (rated 12 v); Imax: 6A.
+Rated voltage: DC12V (Vmax: 15 v starting current 5.8 A).
+Operates Temperature: -30? to 70?. 
+Refrigeration power: Qcmax 50-60 w.
+Package Included:
+1/5/10PCS  x TEC1-12706 Heatsink Thermoelectric Cooler Cooling Peltier Plate Module

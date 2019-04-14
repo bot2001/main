@@ -1,0 +1,14 @@
+This is a 5V 4-Channel Relay interface board.   
+Be able to control various appliances, and other equipments with large current.   
+It can be controlled directly by Micro-controller (Arduino , 8051, AVR, PIC, DSP, ARM, ARM, MSP430, TTL logic) .   
+5V 4-Channel Relay interface board, and each one needs 50-60mA Driver Current.   
+Equiped with high-current relay, AC250V 10A ; DC30V 10A.   
+Size:7*5.3mm  
+Indication LED’s for Relay output status.
+Application:   
+Supports all MCU control.   
+The industrial field.   
+PLC control.   
+Smart home control.
+Package Included:1X4 Channel Relay Module DC 5V With Optocoupler For Arduino PIC ARM AVR DSP
+8 CH With Optocoupler(Blue)    
