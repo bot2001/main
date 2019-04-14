@@ -8,6 +8,7 @@
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
+double temp;  // temperatura ideal
 double temp0; // baseline exterior
 double temp1; // sala
 double temp2; // quarto
@@ -34,13 +35,18 @@ const int servo5pin = 5;
 Servo servo6;
 const int servo6pin = 18;
 
+bool placaOn = false;
+bool quartoOn = false;
+bool banhoOn = false;
+
 const int relay1 = 2;
 const int relay2 = 19;
 const int relay3 = 21;
 
-const int l1 = 36;
+const int light = 500;  // valor limiar da luz; pode e deve ser ajustado
+const int l0 = 36;
 float lightO;
-const int l2 = 39;
+const int l1 = 39;
 float lightI;
 
 Shifty shift;
@@ -74,7 +80,8 @@ void setup() {
 }
 
 void loop() {
-
+  checkRelay();
+  checkLights();
 }
 
 void door(int door, bool state) {
@@ -170,7 +177,36 @@ void door(int door, bool state) {
   }
 }
 
-void printTemperatures() {
+void checkRelay() {
+  if (placaOn && temp1<temp) {
+    digitalWrite(relay1, HIGH);
+  }
+  else {
+    digitalWrite(relay1, LOW);
+  }
+
+  if (quartoOn && temp2<temp) {
+    digitalWrite(relay2, HIGH);
+  }
+  else {
+    digitalWrite(relay2, LOW);
+  }
+
+  if (banhoOn && temp3<temp) {
+    digitalWrite(relay3, HIGH);
+  }
+  else {
+    digitalWrite(relay3, LOW);
+  }
+}
+
+void checkLights() {
+  light0 = analogRead(l0);
+  light1 = analogRead(l1);
+  // comparar os inputs e agir em conformidade
+}
+
+void printTemperatures() {  //só para teste mesmo
   sensors.requestTemperatures();
   temp0 = sensors.getTempCByIndex(0);
   temp1 = sensors.getTempCByIndex(1);
