@@ -47,10 +47,11 @@ void setup() {
 }
 
 void loop(){
-  
-  struct gpio gpio34{34,,"Sensor de Temperatura", digitalRead(34)};
-  struct gpio gpio36{36,,"Sensor de Luz #1", digitalRead(36)};
-  struct gpio gpio39{39,,"Sensor de Luz #2", digitalRead(39)};
+  sensors.requestTemperatures();
+
+  struct gpio gpio34{34,,"Sensor de Temperatura", sensors.getTempCByIndex(1)};
+  struct gpio gpio36{36,,"Sensor de Luz #1", analogRead(36)};
+  struct gpio gpio39{39,,"Sensor de Luz #2", analogRead(39)};
   struct gpio gpio32{32,33,"Motor 1", 0};
   struct gpio gpio14{14,12,"Motor 2", 0};
   struct gpio gpio15{15,2,"Motor 3", 0};
@@ -100,7 +101,7 @@ void loop(){
             //Parte Engraçada
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
-            client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+            client.println("<head><meta http-equiv='refresh' content='5'/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
             cl("<title>BOT 2001 Control Page</title>");
             client.println("<link rel=\"icon\" href=\"data:,\">");
             // CSS to style the on/off buttons 
@@ -118,10 +119,18 @@ void loop(){
             // Web Page Heading
             client.println("<body style'background-color: #282c34'><h1>BOT 2001</h1>");
             cl("<table width:'100%'>");
+            cl("<tr>");
+            cl("<td>");
+            cl("Temperatura");
+            cl("</td>");
+            cl("<td>");
+            cl("<input type='range' min="15" max="35" value="25" class="slider" id="tempRange">");
+            cl("</td>");
+            cl("</tr>");
               cl("<tr>");
                 cl("<th>");
                   cl("Informação dos Sensores");
-                cl("</th>";
+                cl("</th>");
                 cl("<th>");
                   cl("Controlo de Atuadores");
                 cl("</th>");
@@ -132,97 +141,99 @@ void loop(){
                 cl("</td>");
                 cl("<td>GPIO 32 - %s: %s",gpio32.desc, gpio32.value);
                 cl("</td>");
-                cl("<td">);
+                cl("<td>");
                 if (gpio32.value==0) {
                   client.println("<p><a href=\"/32/on\"><button class=\"button\">ON</button></a></p>");
                 } else {
                   client.println("<p><a href=\"/32/off\"><button class=\"button button2\">OFF</button></a></p>");
                 } 
-                cl("</td">);
-                cl("</tr">);
-                cl("<tr>");
-                 cl("<td>");
-                cl("<td>GPIO 36 - %s: %s",gpio36.desc, gpio36.value);
                 cl("</td>");
-                cl("<td>GPIO 14 - %s: %s",gpio14.desc, gpio14.value);
-                cl("</td>");
-                cl("<td">);
-                if (gpio14.value==0) {
-                  client.println("<p><a href=\"/14/on\"><button class=\"button\">ON</button></a></p>");
-                } else {
-                  client.println("<p><a href=\"/14/off\"><button class=\"button button2\">OFF</button></a></p>");
-                } 
-                cl("</td">);
-                cl("</tr">);
+                cl("</tr>");
+                if(gpio32.value!=0){ //Se o 32 estiver ativo, mostra o 14 (e o 36?)
+                  cl("<tr>");
+                  cl("<td>");
+                  cl("<td>GPIO 36 - %s: %s",gpio36.desc, gpio36.value);
+                  cl("</td>");
+                  cl("<td>GPIO 14 - %s: %s",gpio14.desc, gpio14.value);
+                  cl("</td>");
+                  cl("<td>");
+                  if (gpio14.value==0) {
+                    client.println("<p><a href=\"/14/on\"><button class=\"button\">ON</button></a></p>");
+                  } else {
+                    client.println("<p><a href=\"/14/off\"><button class=\"button button2\">OFF</button></a></p>");
+                  } 
+                  cl("</td>");
+                  cl("</tr>");
+                }
                 cl("<tr>");
                  cl("<td>");
                 cl("<td>GPIO 39 - %s: %s",gpio39.desc, gpio39.value);
                 cl("</td>");
                 cl("<td>GPIO 15 - %s: %s",gpio34.desc, gpio34.value);
                 cl("</td>");
-                cl("<td">);
+                cl("<td>");
                 if (gpio15.value==0) {
                   client.println("<p><a href=\"/15/on\"><button class=\"button\">ON</button></a></p>");
                 } else {
                   client.println("<p><a href=\"/15/off\"><button class=\"button button2\">OFF</button></a></p>");
                 } 
-                cl("</td">);
-                cl("</tr">);
+                cl("</td>");
+                cl("</tr>");
                 cl("<tr>");
                 cl("<td>GPIO 4 - %s: %s",gpio4.desc, gpio4.value);
                 cl("</td>");
-                cl("<td">);
+                cl("<td>");
                 if (gpio4.value==0) {
                   client.println("<p><a href=\"/4/on\"><button class=\"button\">ON</button></a></p>");
                 } else {
                   client.println("<p><a href=\"/4/off\"><button class=\"button button2\">OFF</button></a></p>");
                 } 
-                cl("</td">);
-                cl("</tr">);
+                cl("</td>");
+                cl("</tr>");
                 cl("<tr>");
                 cl("<td>GPIO 16 - %s: %s",gpio16.desc, gpio16.value);
                 cl("</td>");
-                cl("<td">);
+                cl("<td>");
                 if (gpio34.value==0) {
                   client.println("<p><a href=\"/16/on\"><button class=\"button\">ON</button></a></p>");
                 } else {
                   client.println("<p><a href=\"/16/off\"><button class=\"button button2\">OFF</button></a></p>");
                 } 
-                cl("</td">);
-                cl("</tr">);
+                cl("</td>");
+                cl("</tr>");
                 cl("<tr>");
                 cl("<td>GPIO 17 - %s: %s",gpio17.desc, gpio17.value);
                 cl("</td>");
-                cl("<td">);
+                cl("<td>");
                 if (gpio34.value==0) {
                   client.println("<p><a href=\"/17/on\"><button class=\"button\">ON</button></a></p>");
                 } else {
                   client.println("<p><a href=\"/17/off\"><button class=\"button button2\">OFF</button></a></p>");
                 } 
-                cl("</td">);
-                cl("</tr">);
+                cl("</td>");
+                cl("</tr>");
                 cl("<tr>");
                 cl("<td>GPIO 5 - %s: %s",gpio5.desc, gpio5.value);
                 cl("</td>");
-                cl("<td">);
+                cl("<td>");
                 if (gpio34.value==0) {
                   client.println("<p><a href=\"/5/on\"><button class=\"button\">ON</button></a></p>");
                 } else {
                   client.println("<p><a href=\"/18/off\"><button class=\"button button2\">OFF</button></a></p>");
                 } 
-                cl("</td">);
-                cl("</tr">);
+                cl("</td>");
+                cl("</tr>");
                 cl("<tr>");
                 cl("<td>GPIO 18 - %s: %s",gpio18.desc, gpio18.value);
                 cl("</td>");
-                cl("<td">);
+                cl("<td>");
                 if (gpio34.value==0) {
                   client.println("<p><a href=\"/18/on\"><button class=\"button\">ON</button></a></p>");
                 } else {
                   client.println("<p><a href=\"/18/off\"><button class=\"button button2\">OFF</button></a></p>");
                 } 
-                cl("</td">);
-                cl("</tr">);
+                cl("</td>");
+                cl("</tr>");
             cl("</table>");
             // Display current state, and ON/OFF buttons for GPIO 26  
             // If the output26State is off, it displays the ON button       
