@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <DallasTemperature.h>
 #include <Servo.h>
-#include <Shifty.h>
+#include <ShiftRegister74HC595.h>
 
 #define ONE_WIRE_BUS 15
 
@@ -45,11 +45,20 @@ const int relay3 = 21;
 
 const int light = 500;  // valor limiar da luz; pode e deve ser ajustado
 const int l0 = 36;
-float lightO;
+int lightO;
 const int l1 = 39;
-float lightI;
+int lightI;
 
-Shifty shift;
+ShiftRegister74HC595 shift(2, 26, 27, 25);
+
+bool livingRoom = false;
+bool livingRoomStatus = false;
+bool kitchen = false;
+bool kitchenStatus = false;
+bool bedroom = false;
+bool bedroomStatus = false;
+bool bathroom = false;
+bool bathroomStatus = false;
 
 void setup() {
   Serial.begin(115200);
@@ -73,15 +82,6 @@ void setup() {
   pinMode(relay2, OUTPUT);
   pinMode(relay3, OUTPUT);
 
-  shift.setBitCount(8);
-  // Set the clock, data, and latch pins
-  shift.setPins(27, 25, 26);
-
-}
-
-void loop() {
-  checkRelay();
-  checkLights();
 }
 
 void door(int door, bool state) {
@@ -177,6 +177,65 @@ void door(int door, bool state) {
   }
 }
 
+void checkInput() {
+  if (livingRoomStatus != livingRoom) {
+    if (livingRoom) {
+      placaOn = true;
+      door(1, false);
+    }
+    else {
+      placaOn = false;
+      door(1, true);
+    }
+    livingRoomStatus = livingRoom;
+  }
+
+  if (kitchenStatus != kitchen) {
+    if (kitchen) {
+      door(2, true);
+      door(3, false);
+    }
+    else {
+      if (livingRoom) {
+        door(2, false);
+      }
+      else {
+        door(2, true);
+      }
+    }
+    kitchenStatus = kitchen;
+  }
+
+  if (bedroomStatus != bedroom) {
+    if (bedroom) {
+      quartoOn = true;
+      door(3, false);
+      door(6, false);
+    }
+    else {
+      quartoOn = false;
+    }
+    bedroomStatus = bedroom;
+  }
+
+  if (bathroomStatus != bathroom) {
+    if (bathroom) {
+      banhoOn = true;
+      door(5, false);
+      door(6, false);
+    }
+    else {
+      banhoOn = false;
+    }
+  }
+}
+
+void checkLights() {
+  lightO = analogRead(l0);
+  lightI = analogRead(l1);
+  // comparar os inputs e agir em conformidade
+}
+
 void checkRelay() {
   if (placaOn && temp1<temp) {
     digitalWrite(relay1, HIGH);
@@ -200,10 +259,10 @@ void checkRelay() {
   }
 }
 
-void checkLights() {
-  light0 = analogRead(l0);
-  light1 = analogRead(l1);
-  // comparar os inputs e agir em conformidade
+void loop() {
+  //checkInput();
+  //checkRelay();
+  //checkLights();
 }
 
 void printTemperatures() {  //só para teste mesmo
