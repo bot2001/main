@@ -56,15 +56,18 @@ const int l1 = 39;
 int light1;
 int b = 0;
 
-ShiftRegister74HC595 shift(2, 26, 27, 25);
+ShiftRegister74HC595 shift(1, 26, 27, 25);
 
+// são estas quatro bools que os botoes do aquecimento afetam
 bool livingRoom = false;
-bool livingRoomStatus = false;
 bool kitchen = false;
-bool kitchenStatus = false;
 bool bedroom = false;
-bool bedroomStatus = false;
 bool bathroom = false;
+
+// estas não mexes
+bool livingRoomStatus = false;
+bool kitchenStatus = false;
+bool bedroomStatus = false;
 bool bathroomStatus = false;
 
 void door(int door, bool state) {
@@ -273,6 +276,15 @@ void checkLights() {
 Ticker timerRelay(checkRelay, 1000, 0, MILLIS);
 Ticker timerLight(checkLights, 500, 0, MILLIS);
 
+void light(int which, bool state) {
+  if (state) {
+    shift.set(which, HIGH);
+  }
+  else {
+    shift.set(which, LOW);
+  }
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Hello world");
@@ -301,6 +313,7 @@ void loop() {
   sensors.requestTemperatures();
   temp0 = sensors.getTempCByIndex(0); // esta temp0 é o valor da temperatura exterior
   checkInput(); // verifica se algum dos estados dos botões está diferente
+  // iguala o temp ao valor do slider!
   // não te esqueças de atribuir um valor ao bool correspondente consoante o estado do botão
   if (timerRelay.state() == RUNNING) {
     timerRelay.update();
@@ -320,6 +333,10 @@ void loop() {
 
   // '' mas off
   timerLight.stop();
+
+  // nos botões em que há override da luz ou portas, tens as funções door() e light()
+  // true abrir false fechar
+  // podes ver qual é qual no ficheiro excel
 
   // Código a chamar quando o client disconecta
   timerRelay.stop();
