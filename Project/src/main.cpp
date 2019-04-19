@@ -2,6 +2,7 @@
 #include <DallasTemperature.h>
 #include <Servo.h>
 #include <ShiftRegister74HC595.h>
+#include <Ticker.h>
 
 #define ONE_WIRE_BUS 15
 
@@ -11,8 +12,12 @@ DallasTemperature sensors(&oneWire);
 double temp;  // temperatura ideal
 double temp0; // baseline exterior
 double temp1; // sala
+double temp1Sum;
 double temp2; // quarto
+double temp2Sum;
 double temp3; // casa de banho
+double temp3Sum;
+int n = 0;
 
 bool open1 = false;
 const int m1a = 32;
@@ -43,11 +48,13 @@ const int relay1 = 2;
 const int relay2 = 19;
 const int relay3 = 21;
 
-const int light = 500;  // valor limiar da luz; pode e deve ser ajustado
+const int light0T = 600;
 const int l0 = 36;
-int lightO;
+int light0;
+const int light1T = 500;
 const int l1 = 39;
-int lightI;
+int light1;
+int b = 0;
 
 ShiftRegister74HC595 shift(2, 26, 27, 25);
 
@@ -59,30 +66,6 @@ bool bedroom = false;
 bool bedroomStatus = false;
 bool bathroom = false;
 bool bathroomStatus = false;
-
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Hello world");
-  sensors.begin();
-
-  pinMode(m1a, OUTPUT);
-  pinMode(m1b, OUTPUT);
-  pinMode(m2a, OUTPUT);
-  pinMode(m2b, OUTPUT);
-  pinMode(m7a, OUTPUT);
-  pinMode(m7b, OUTPUT);
-
-  servo0.attach(servo0pin);
-  servo3.attach(servo3pin);
-  servo4.attach(servo4pin);
-  servo5.attach(servo5pin);
-  servo6.attach(servo6pin);
-
-  pinMode(relay1, OUTPUT);
-  pinMode(relay2, OUTPUT);
-  pinMode(relay3, OUTPUT);
-
-}
 
 void door(int door, bool state) {
   switch (door) {
@@ -230,42 +213,120 @@ void checkInput() {
   }
 }
 
-void checkLights() {
-  lightO = analogRead(l0);
-  lightI = analogRead(l1);
-  // comparar os inputs e agir em conformidade
+void checkRelay() {
+  sensors.requestTemperatures();
+  temp1 = sensors.getTempCByIndex(1);
+  temp2 = sensors.getTempCByIndex(2);
+  temp3 = sensors.getTempCByIndex(3);
+
+  n =+ 1;
+  temp1Sum =+ temp1;
+  temp2Sum =+ temp2;
+  temp3Sum =+ temp3;
+
+  if (n == 30) {  // calcula a temperatura média a cada 30 segundos, para evitar flutuações
+    temp1 = temp1Sum/n;
+    temp2 = temp2Sum/n;
+    temp3 = temp3Sum/n;
+    n = 0;
+    if (placaOn && temp1<temp) {
+      digitalWrite(relay1, HIGH);
+    }
+    else {
+      digitalWrite(relay1, LOW);
+    }
+    if (quartoOn && temp2<temp) {
+      digitalWrite(relay2, HIGH);
+    }
+    else {
+      digitalWrite(relay2, LOW);
+    }
+    if (banhoOn && temp3<temp) {
+      digitalWrite(relay3, HIGH);
+    }
+    else {
+      digitalWrite(relay3, LOW);
+    }
+  }
+
 }
 
-void checkRelay() {
-  if (placaOn && temp1<temp) {
-    digitalWrite(relay1, HIGH);
+void checkLights() {
+  b =+ 1;
+  light0 =+ analogRead(l0);
+  light1 =+ analogRead(l1);
+  if (b == 1200) {  // de dez em dez minutos
+    light0 = light0/b;
+    light1 = light1/b;
+    b = 0;
+    if (light0 > light0T) {
+      door(7, true);
+      // desligar as luzes
+    }
+    if (light1 < light1T) {
+      door(7, false);
+      // ligar as luzes
+    }
   }
-  else {
-    digitalWrite(relay1, LOW);
-  }
+}
 
-  if (quartoOn && temp2<temp) {
-    digitalWrite(relay2, HIGH);
-  }
-  else {
-    digitalWrite(relay2, LOW);
-  }
+Ticker timerRelay(checkRelay, 1000, 0, MILLIS);
+Ticker timerLight(checkLights, 500, 0, MILLIS);
 
-  if (banhoOn && temp3<temp) {
-    digitalWrite(relay3, HIGH);
-  }
-  else {
-    digitalWrite(relay3, LOW);
-  }
+void setup() {
+  Serial.begin(115200);
+  Serial.println("Hello world");
+  sensors.begin();
+
+  pinMode(m1a, OUTPUT);
+  pinMode(m1b, OUTPUT);
+  pinMode(m2a, OUTPUT);
+  pinMode(m2b, OUTPUT);
+  pinMode(m7a, OUTPUT);
+  pinMode(m7b, OUTPUT);
+
+  servo0.attach(servo0pin);
+  servo3.attach(servo3pin);
+  servo4.attach(servo4pin);
+  servo5.attach(servo5pin);
+  servo6.attach(servo6pin);
+
+  pinMode(relay1, OUTPUT);
+  pinMode(relay2, OUTPUT);
+  pinMode(relay3, OUTPUT);
 }
 
 void loop() {
-  //checkInput();
-  //checkRelay();
-  //checkLights();
+  // Código a chamar sempre que a página html dá refresh
+  sensors.requestTemperatures();
+  temp0 = sensors.getTempCByIndex(0); // esta temp0 é o valor da temperatura exterior
+  checkInput(); // verifica se algum dos estados dos botões está diferente
+  // não te esqueças de atribuir um valor ao bool correspondente consoante o estado do botão
+  if (timerRelay.state() == RUNNING) {
+    timerRelay.update();
+  }
+  if (timerLight.state() == RUNNING) {
+    timerLight.update();
+  }
+
+  // Código a chamar quando aquecimento automático está on
+  timerRelay.start();
+
+  // '' mas off
+  timerRelay.stop();
+
+  // Código a chamar quando luzes automáticas está on
+  timerLight.start();
+
+  // '' mas off
+  timerLight.stop();
+
+  // Código a chamar quando o client disconecta
+  timerRelay.stop();
+  timerLight.stop();
 }
 
-void printTemperatures() {  //só para teste mesmo
+void printTemperatures() {  // apenas para teste
   sensors.requestTemperatures();
   temp0 = sensors.getTempCByIndex(0);
   temp1 = sensors.getTempCByIndex(1);
