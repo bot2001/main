@@ -14,9 +14,9 @@ DallasTemperature sensors(&oneWire);
 
 // Colocar as credenciais
 char ssid[] = "Ssid";
-char password[] = "SuperSecretPassword"; 
+char password[] = "SuperSecretPassword"; //ninguem sabe esta pass
 
-WiFiServer server(80);
+WiFiServer server(80); ////esta shit nao funciona comigo 
 //Ports GPIO
 struct gpio{
   int port1, port2; //Pino a controlar (Caso pin simples, usar port1 só, caso motor, usar port1 e port2
@@ -30,9 +30,9 @@ struct gpio{
 char header[sizeof(long)];
 
 
-void setup2() {
+void setup() {
   // Connect to Wi-Fi network with SSID and password
-  Serial.begin(115200);
+  Serial.begin(115200);                                         //este void tambem se chama setup foi literalmente copypaste do tutorial ele é necessario portanto chamalhe o que quiseres
   Serial.print("Connecting to ");
   Serial.println(ssid);
   server.begin(ssid, password);
@@ -103,8 +103,6 @@ bool livingRoom = false;
 bool kitchen = false;
 bool bedroom = false;
 bool bathroom = false;
-bool autolights = true;
-bool autoheating = true;
 
 // estas não mexes
 bool livingRoomStatus = false;
@@ -331,7 +329,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Hello world");
   sensors.begin();
-
+  
   pinMode(m1a, OUTPUT);
   pinMode(m1b, OUTPUT);
   pinMode(m2a, OUTPUT);
@@ -402,7 +400,7 @@ void loop2(){
   sensors.requestTemperatures();
 
   struct gpio gpio34{34,0,"Sensor de Temperatura", sensors.getTempCByIndex(1)};
-  struct gpio gpio36{36,0,"Sensor de Luz #1", analogRead(36)};
+  struct gpio gpio36{36,0,"Sensor de Luz #1", analogRead(36)};                            //Don't know se é preciso mas checka o tutorial e faz o que achares melhor
   struct gpio gpio39{39,0,"Sensor de Luz #2", analogRead(39)};
   struct gpio gpio32{32,33,"Motor 1", 0};
   struct gpio gpio14{14,12,"Motor 2", 0};
@@ -432,8 +430,21 @@ void loop2(){
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
-            // turns the GPIOs on and off  //TO DO Escrever os indexes de mudança de cada um dos pinos, cant be arsed
-            client.println();
+            // turns the GPIOs on and off  //TO DO Escrever os indexes de mudança de cada um dos pinos, cant be arsed - trocar outputs por bools correspondentes
+            if (header.indexOf("GET /32/on") >= 0) {
+              Serial.println("GPIO 32 On");
+              door(0,true);
+            } else if (header.indexOf("GET /33/off") >= 0) {  // isto tava no tutorial da esp32 webserver da random nerd tutorials 
+              Serial.println("GPIO 33 off");                  // nao sei se o que está ai ta certo
+              door(0,false);                                  // porque eles mexem direto nos pinos e nao em funçoes       
+            } else if (header.indexOf("GET /4/on") >= 0) {    // still a arte do index é necessaria para meter dentro dos botoes do html tens lá uns exemplos genericos parecidos iguas ...
+              Serial.println("GPIO 4 on");                    //aos do tutorial para substituires com o que colocares
+              door(0,true);
+            } else if (header.indexOf("GET /4/off") >= 0) {
+              Serial.println("GPIO 4 off");
+              door(0,false);
+              else if (header.indexOf("GET /4/off") >= 0) {
+            
             
             //Parte Engraçada
             // Display the HTML web page
@@ -446,63 +457,217 @@ void loop2(){
             client.println("<script src='https://code.jquery.com/jquery-3.1.1.slim.min.js'></script>");
             client.println("<script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js'></script>");
             client.println("<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js'></script>");
+            client.println("<script>function togglediv() {var div = document.getElementById('salas');div.style.display = div.style.display == 'none' ? 'block' : 'none';var div2 = 	document.getElementById('salas2');div2.style.display = div2.style.display == 'none' ? 'block' : 'none';var div3 = 	document.getElementById('salas3');div3.style.display = div3.style.display == 'block' ? 'none' : 'block';var div4 = 	document.getElementById('salas4');div4.style.display = div4.style.display == 'block' ? 'none' : 'block';var div5 = 	document.getElementById('salas5');div5.style.display = div5.style.display == 'block' ? 'none' : 'block';var div6 = 	document.getElementById('salas6');div6.style.display = div6.style.display == 'block' ? 'none' : 'block';var div7 = document.getElementById('cortinas');div7.style.display = div7.style.display == 'none' ? 'block' : 'none';var div8 = document.getElementById('cortinas2');div8.style.display = div8.style.display == 'none' ? 'block' : 'none';}</script>");
+            client.println("<script>function togglediv2() {var div = document.getElementById('cozinha');div.style.display = div.style.display == 'block' ? 'none' : 'block';var div2 = 	document.getElementById('cozinha2');div2.style.display = div2.style.display == 'block' ? 'none' : 'block';var div3 = document.getElementById('sala1');div3.style.display = div3.style.display == 'none' ? 'block' : 'none';var div4 = document.getElementById('sala2');div4.style.display = div4.style.display == 'none' ? 'block' : 'none';var div5 = document.getElementById('sala3');div5.style.display = div5.style.display == 'none' ? 'block' : 'none';var div6 = document.getElementById('sala4');div6.style.display = div6.style.display == 'none' ? 'block' : 'none';var div7 = document.getElementById('cozinha3');div7.style.display = div7.style.display == 'block' ? 'none' : 'block';var div8 = 	document.getElementById('cozinha4');div8.style.display = div8.style.display == 'block' ? 'none' : 'block';}</script>");
+            client.println("<script>function togglediv3() {var div = document.getElementById('cozinha3');div.style.display = div.style.display == 'block' ? 'none' : 'block';var div2 = 	document.getElementById('cozinha4');div2.style.display = div2.style.display == 'block' ? 'none' : 'block';}</script>");
+            client.println("<script>function togglediv4() {var div = document.getElementById('quarto');div.style.display = div.style.display == 'none' ? 'block' : 'none';var div2 = 	document.getElementById('quarto2');div2.style.display = div2.style.display == 'none' ? 'block' : 'none';}</script>");
+            client.println("<script>function togglediv5() {var div = document.getElementById('banho');div.style.display = div.style.display == 'none' ? 'block' : 'none';var div2 = 	document.getElementById('banho1');div2.style.display = div2.style.display == 'none' ? 'block' : 'none';}</script>");
+            client.println("<script>function togglediv6() {var div = document.getElementById('sala5');div.style.display = div.style.display == 'block' ? 'none' : 'block';var div2 = 	document.getElementById('sala6');div2.style.display = div2.style.display == 'block' ? 'none' : 'block'; var div3 = document.getElementById('quarto3');div3.style.display = div3.style.display == 'block' ? 'none' : 'block';var div4 = document.getElementById('quarto4');div4.style.display = div4.style.display == 'block' ? 'none' : 'block';var div5 = document.getElementById('banho2');div5.style.display = div5.style.display == 'block' ? 'none' : 'block';var div6 = document.getElementById('banho3');div6.style.display = div6.style.display == 'block' ? 'none' : 'block';var div7 = document.getElementById('over');div7.style.display = div7.style.display == 'block' ? 'none' : 'block';}</script>");
             client.println("<style>");
-            client.println("html{font-family: Helvetica;display: inline-block;margin: 0px auto;text-align: center;}");
+            client.println("html{font-family: Helvetica;display: inline-block;margin: 0px auto;text-align: center;}");  
             client.println("body{margin:0;padding:0;color: #FFFFFF}");
+            client.println(".button{background-color: #4CAF50;border: none;color: white;width: 160px;height: 70px;text-align: center;text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
+            client.println( ".button2{background-color: #555555;}");
             client.println(".slider{-webkit-appearance: none;width: 80%;height: 15px;border-radius: 5px;   background: #d3d3d3;outline: none;opacity: 0.7;-webkit-transition: .2s;transition: opacity .2s;}");
             client.println(".slider::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 25px;height: 25px;border-radius: 50%; background: #4CAF50;cursor: pointer;}");
             client.println(".slider::-moz-range-thumb {width: 25px;height: 25px;border-radius: 50%;background: #4CAF50;cursor: pointer;}");
             client.println("th{font-size: 24px;font-weight: bold;text-align: center;}");
             client.println("td{text-align: center;font-size: 18px}");
             client.println("table{float:center;width:100%;}");
-            client.println(".switch {position: relative;display: inline-block;width: 60px;height: 34px;}");
-            client.println(".switch input { opacity: 0;width: 0;height: 0;}");
-            client.println(".slider.round{position: absolute;cursor: pointer;top: -1;left: 0;right: 0;bottom: 0;background-color: #ccc;-webkit-transition: .4s;transition: .4s;}");
-            client.println(".slider.round:before {position: absolute;content: "";height: 26px;width: 26px;left: 0px;bottom: -4px;background-color: white;-webkit-transition: .4s;transition: .4s;}");
-            client.println("input:checked + .slider.round {background-color: #2196F3;}");
-            client.println("input:focus + .slider.round {box-shadow: 0 0 1px #2196F3;}");
-            client.println("input:checked + .slider.round:before {-webkit-transform: translateX(26px);-ms-transform: translateX(26px);transform: translateX(26px);}");
-            client.println(".slider.round {border-radius: 34px;}");
-            client.println(".slider.round:before {border-radius: 50%;}");
-            client.println("<script>var x = '0';switch (x) {case 0:text = 'Off';break;case 1:text = 'On';break;default:text = 'No value found';}</script>");
+            client.println("</style></head>");
             client.println("<body style='background-color: #282c34'>");
             client.println("<h1>BOT 2001</h1>");
-            client.println("<table><tr><th>Luzes Automáticas</th><td><label class='switch'><input type='checkbox' checked><span class='slider round'></span></label></td></tr>");
-            client.println("tr><td>Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;<input style='height: 26px; width:26px; margin-left:0' value="" checked type='checkbox'></td></tr>");
-            client.println("<tr><td>Sala de jantar&nbsp;&nbsp;&nbsp;&nbsp;<input style='height: 26px; width:26px; margin-left:0' value="" checked type='checkbox'></td></tr>");
-            client.println("<tr><th>Aquecimento Automático</th>	<td><label class='switch'><input type='checkbox' checked><span class='slider round'></span></label></td></tr>");
+            client.println("<table>");
+            client.println("<tr><th>Luzes Automáticas</th><td>");
+            if{
+              client.println("<p><a \"/33/on\"><button class=\"button\"  onclick='togglediv()' >ON</button></a></p>"); //botao para as luzes automaticas ligadas
+            } else{
+              client.println("<p><a \"/33/on\"><button class=\"button button2\"  onclick='togglediv()' >OFF</button></a></p>"); //botao para as luzes automaticas ligadas
+            }
+            client.println("</td></tr>");
+            client.println("<tr><td><div id='salas'>Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;<input style='height: 26px; width:26px; margin-left:0' value='' checked='' type='checkbox'></div></td></tr>");
+            client.println("<tr><td><div id='salas2'> Sala de jantar&nbsp;&nbsp;&nbsp;&nbsp;<input style='height: 26px; width:26px; margin-left:0' value='' checked='' type='checkbox'></div></td></tr>");
+            client.println("<tr><th>Aquecimento Automático</th><td>");
+            if{
+              client.println("<p><a \"/33/on\"><button onclick='togglediv6()' class=\"button\">ON</button></a></p>"); //botao para o aquecimento automatico ligado
+            } else{
+              client.println("<p><a \"/33/on\"><button onclick='togglediv6()' class=\"button button2\">OFF</button></a></p>"); //botao para o aquecimento automatico ligado
+            } 
+            client.println("</td></tr>");           
             client.println("<tr><th>Temperatura Exterior</th><td>'Colocar Valor do Sensor'</td></tr>");
             client.println("<tr><td><p></td></tr>");
             client.println("<tr><th>Temperatura</th><td><input type='range' min='0' max='30' value='20' step='0.5' class='slider' onchange='showValue(this.value)' /><span id='range'>20</span><script type='text/javascript'>function showValue(newValue){document.getElementById('range').innerHTML=newValue;}</script> ºC</td></tr>");
             client.println("<th colspan='3'>Aquecimento</th>");
-            client.println("<tr><th>Sala</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Cozinha</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Quarto</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Casa de banho</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
+            client.println("<tr><th>Sala</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button onclick='togglediv2()' class=\"button\">ON</button></a></p>"); //botao para o aquecimento da sala ligado
+            }  else {
+              client.println("<p><a \"/33/on\"><button onclick='togglediv2()' class=\"button button2\">OFF</button></a></p>"); //botao para o aquecimento da sala desligado
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th><div style='display:none' id='cozinha'>Cozinha</div></th><td>");
+            if{
+              client.println("<div style='display:none' id='cozinha2'><p><a \"/33/on\"><button onclick='togglediv3()' class=\"button\">ON</button></a></p></div>"); //botao para o aquecimento da cozinha ligado
+            }  else{
+              client.println("<div style='display:none' id='cozinha2'><p><a \"/33/on\"><button onclick='togglediv3()' class=\"button button2\">OFF</button></a></p></div>"); //botao para o aquecimento da cozinha desligado
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th>Quarto</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button onclick='togglediv4()' class=\"button\">ON</button></a></p>");  //botao para o aquecimento do quarto ligado
+            }  else
+              client.println("<p><a \"/33/on\"><button onclick='togglediv4()' class=\"button button2\">OFF</button></a></p>"); //botao para o aquecimento do quarto desligado
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th>Casa de banho</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button onclick='togglediv5()' class=\"button\">ON</button></a></p>"); //botao para o aquecimento da casa de banho ligado
+            }  else
+              client.println("<p><a \"/33/on\"><button onclick='togglediv5()' class=\"button button2\">OFF</button></a></p>"); //botao para o aquecimento da casa de banho deligado
+            }
+            client.println("</td></tr>");
             client.println("<th colspan='3'>Luzes</th>");
-            client.println("<tr><th>Hall de entrada</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Sala de estar</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Sala de jantar</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Cozinha</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Quarto</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Casa de banho</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Armário Hall</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Guarda-vestidos</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th colspan='3'>Cortina</th></tr>");
-            client.println("<tr><th colspan='3'><label class='switch'><input type='checkbox'><span class='slider round'></span></label></th></tr>");
+            client.println("tr><th>Hall de entrada</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button class=\"button\">ON</button></a></p>"); // botao para a luz do hall de entrada ligada
+            }  else{
+              client.println("<p><a \"/33/on\"><button class=\"button button2\">OFF</button></a></p>"); // botao para a luz do hall de entrada desligada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th><div style='display:none' id='salas5'>Sala de estar</div></th><td>");
+            if {
+              client.println("<div style='display:none' id='salas3'><p><a \"/33/on\"><button class=\"button\">ON</button></a></p></div>"); // botao para a luz da sala de estar ligada
+            } else{
+              client.println("<div style='display:none' id='salas3'><p><a \"/33/on\"><button class=\"button button2\">OFF</button></a></p></div>");  // botao para a luz da sala de estar desligada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th><div style='display:none' id='salas6'>Sala de jantar</div></th><td>");
+            if {
+              client.println("<div style='display:none' id='salas4'><p><a \"/33/on\"><button class=\"button\">ON</button></a></p></div>"); // botao para a luz da sala de jantar ligada
+            } else{
+              client.println("<div style='display:none' id='salas4'><p><a \"/33/on\"><button class=\"button button2\">OFF</button></a></p></div>");  // botao para a luz da sala de jantar desligada  
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th>Cozinha</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button class=\"button\">ON</button></a></p>"); // botao para a luz do quarto ligada
+            } else
+              client.println("<p><a \"/33/on\"><button class=\"button button2\">OFF</button></a></p>"); // botao para a luz do quarto desligada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th>Quarto</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button class=\"button\">ON</button></a></p>"); // botao para a luz do quarto ligada
+            } else
+              client.println("<p><a \"/33/on\"><button class=\"button button2\">OFF</button></a></p>"); // botao para a luz do quarto desligada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th>Casa de banho</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button class=\"button\">ON</button></a></p>"); // botao para a luz da casa de banho ligada
+            } else
+              client.println("<p><a \"/33/on\"><button class=\"button button2\">OFF</button></a></p>"); // botao para a luz da casa de banho desligada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th>Armário Hall</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button class=\"button\">ON</button></a></p>"); // botao para a luz do armario hall ligada
+            } else
+              client.println("<p><a \"/33/off\"><button class=\"button button2\">OFF</button></a></p>"); // botao para a luz do armario hall desligada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th>Guarda-vestidos</th><td>");
+            if {
+              client.println("<p><a \"/33/on\"><button class=\"button\">ON</button></a></p>"); // botao para a luz do guarda vestidos ligada
+            } else
+              client.println("<p><a \"/33/off\"><button class=\"button button2\">OFF</button></a></p>"); // botao para a luz do guarda vestidos desligada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th colspan='3'><div id='cortinas'>Cortina</div></th></tr>");
+            client.println("<tr>");
+            if {
+              client.println("<th colspan='3'><div id='cortinas2'><p><a \"/33/on\"><button class=\"button\">OPEN</button></a></p></div></th>"); // botao para a cortina aberta
+              else{
+              client.println("<th colspan='3'><div id='cortinas2'><p><a \"/33/off\"><button class=\"button button2\">CLOSED</button></a></p></div></th>"); // botao para a cortina fechada
+            }
+            client.println("</tr>");   
             client.println("<tr><th colspan='3'>Portas</th></tr>");
-            client.println("<tr><th>Entrada</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Sala</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Sala-Cozinha</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Cozinha</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Quarto</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Quarto-Casa de banho</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("<tr><th>Casa de banho</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("tr><th>Sala</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("tr><th>Quarto</th><td><label class='switch'><input type='checkbox'><span class='slider round'></span></label></td></tr>");
-            client.println("tr><th>Casa de Banho</th><td><label class='switch'><input type='checkbox'<span class='slider round'></span></label></td></tr>");
+            client.println("<tr><th>Entrada</th><td>");
+            if {
+              client.println("<p><a href=\"/4/on\"><button class=\"button\">ON</button></a></p>"); //botao para a porta da entrada aberta
+            } else{
+                client.println("<p><a href=\"/4/off\"><button class=\"button button2\">CLOSED</button></a></p>"); //botao para a porta da entrada fechada
+            }
+            client.println("</td></tr>");
+            client.println("<th><div id='sala1'>Sala</div> </th><td>");
+            if {
+              client.println("<div id='sala2'><p><a href=\"/32/on\"><button class=\"button\">OPEN</button></a></p></div>"); //botao para a porta da sala aberta
+            } else{
+                client.println("<div id='sala2'><p><a href=\"/33/off\"><button class=\"button button2\">CLOSED</button></a></p></div>"); //botao  para a porta da sala fechada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th><div id='sala3'>Sala-cozinha</div></th><td>");
+            if {
+              client.println("<div id='sala4'><p><a href=\"/14/on\"><button class=\"button\">OPEN</button></a></p></div>"); //botao para a porta da sala-cozinha aberta
+            } else {
+                client.println("<div id='sala4'><p><a href=\"/12/off\"><button class=\"button button2\">CLOSED</button></a></p></div>"); //botao  para a porta da sala-cozinha fechada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th><div style='display:none' id='cozinha3'>Cozinha</div></th><td>");
+            if {
+              client.println("<div style='display:none' id='cozinha4'><p><a \"/16/on\"><button class=\"button\">OPEN</button></a></p></div>"); //botao para a porta da cozinha aberta
+              else{
+                client.println("<div style='display:none' id='cozinha4'><p><a \"/16/off\"><button class=\"button button2\">CLOSED</button></a></p></div>"); //botao  para a porta da cozinha fechada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th><div id='quarto'>Quarto</div></th><td>");
+            if 
+              client.println("<div id='quarto2'><p><a \"/17/on\"><button class=\"button\">OPEN</button></a></p></div>"); //botao para a porta do quarto aberta
+              else{
+                client.println("<div id='quarto2'><p><a \"/17/off\"><button class=\"button button2\">CLOSED</button></a></p></div>"); //botao para a porta do quarto fechada
+            }
+            client.println("</td></tr>");
+            
+            client.println("<tr><th>Quarto-casa de banho</th><td>");
+            if {
+              client.println("<p><a \"/17/on\"><button class=\"button\">OPEN</button></a></p>"); //botao para a porta do quarto-casa de banho aberta
+              else{
+              client.println("<p><a \"/17/off\"><button class=\"button button2\">CLOSED</button></a></p>"); //botao para a porta do quarto-casa de banho fechada
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th><div id='banho'>Casa de banho</div></th><td>");
+            if {
+              client.println("<div id='banho1'><p><a \"/17/on\"><button class=\"button\">OPEN</button></a></p></div>"); //botao para a porta da casa de banho aberta
+              else {
+              client.println("<div id='banho1'><p><a \"/17/off\"><button class=\"button button2\">CLOSED</button></a></p></div>"); //botao para a porta da casa de banho fechada
+            }
+            client.println("</td></tr>");
+            client.println("<th colspan='3'> <div style='display:none' id='over'>Override de aquecimento</div></th>");
+            client.println("<tr><th><div style='display:none' id='sala5'>Sala</div></th><td>");
+            if {
+              client.println("<div style='display:none' id='sala6'><p><a \"/17/on\"><button class=\"button\">ON</button></a></p></div>"); //botao para a override de aquecimento da sala on
+            } else{
+              client.println("<div style='display:none' id='sala6'><p><a \"/17/off\"><button class=\"button button2\">OFF</button></a></p></div>"); //botao para a override de aquecimento da sala off
+            }
+            client.println("</td></tr>");
+            client.println("<tr><th><div style='display:none' id='quarto3'>Quarto</div></th><td>");
+            if {
+              client.println("<div style='display:none' id='quarto4'><p><a \"/17/on\"><button class=\"button\">ON</button></a></p></div>");  //botao para a override de aquecimento do quarto on
+            }  else{
+              client.println("<div style='display:none' id='quarto4'><p><a \"/17/on\"><button class=\"button button2\">OFF</button></a></p></div>");  //botao para a override de aquecimento do quarto off
+            }
+            client.println("</td></tr>");
+           
+            client.println("<tr><th><div style='display:none' id='banho2'>Casa de banho</div></th><td>");
+            if {
+              client.println("<div style='display:none' id='banho3'><p><a \"/17/on\"><button class=\"button\">ON</button></a></p></div>");  //botao para a override de aquecimento da casa de banho on
+            } else{
+              client.println("<div style='display:none' id='banho3'><p><a \"/17/on\"><button class=\"button button2\">OFF</button></a></p></div>"); //botao para a override de aquecimento da casa de banho off
+            }  
+            client.println("</td></tr>");
             client.println("</table>");
             client.println("</body></html>");
+
 
             // The HTTP response ends with another blank line
             client.println();
