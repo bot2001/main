@@ -273,15 +273,38 @@ void checkLights() {
   }
 }
 
+void cupboardF() {
+  shift.set(6, LOW);
+}
+
+void closetF() {
+  shift.set(7, LOW);
+}
+
 Ticker timerRelay(checkRelay, 1000, 0, MILLIS);
 Ticker timerLight(checkLights, 500, 0, MILLIS);
+
+Ticker cupboard(cupboardF, 600000, 1, MILLIS);
+Ticker closet(closetF, 600000, 1, MILLIS);
 
 void light(int which, bool state) {
   if (state) {
     shift.set(which, HIGH);
+    if (which == 6) {
+      cupboard.start();
+    }
+    if (which == 7) {
+      closet.start();
+    }
   }
   else {
     shift.set(which, LOW);
+    if (which == 6) {
+      cupboard.stop();
+    }
+    if (which == 7) {
+      closet.stop();
+    }
   }
 }
 
@@ -321,6 +344,12 @@ void loop() {
   if (timerLight.state() == RUNNING) {
     timerLight.update();
   }
+  if (cupboard.state() == RUNNING) {
+    cupboard.update();
+  }
+  if (closet.state() == RUNNING) {
+    closet.update();
+  }
 
   // Código a chamar quando aquecimento automático está on
   timerRelay.start();
@@ -355,3 +384,4 @@ void printTemperatures() {  // apenas para teste
   Serial.println(temp2);
   Serial.println(temp3);
 }
+
