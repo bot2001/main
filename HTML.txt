@@ -1,26 +1,27 @@
 BOT 2001
 
-Luzes autom√°ticas (modo default √© ativo)
-- Sala de estar (default ativo)
-- Sala de jantar (default ativo)
+Luzes autom·ticas (modo default È ativo)
+- Sala de estar
+- Sala de jantar
+Aquecimento autom·tico
 
 Temperatura exterior
 Slider temperatura
 
-Aquecimento: (modo default √© off para todos)
+Aquecimento: (modo default È off para todos)
 - Sala
-- Cozinha (aparece s√≥ se a sala estiver ativa)
+- Cozinha (aparece sÛ se a sala estiver ativa)
 - Quarto
 - Casa de banho
 
-Luzes: (modo default √© off para todos)
+Luzes: (modo default È off para todos)
 - Hall de entrada
 - Sala de estar (so aparece se luzes automaticas inativo)
 - Sala de jantar (so aparece se luzes automaticas inativo)
 - Cozinha
 - Quarto
 - Casa de banho
-- Arm√°rio Hall
+- Arm·rio Hall
 - Guarda-vestidos
 
 Cortina (so aparece se luzes automaticas inativo, ver modo inicial no bool open7)

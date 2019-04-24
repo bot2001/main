@@ -44,6 +44,7 @@ bool placaOn = false;
 bool quartoOn = false;
 bool banhoOn = false;
 
+bool autoHeat = true;
 const int relay1 = 2;
 const int relay2 = 19;
 const int relay3 = 21;

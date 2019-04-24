@@ -1,5 +1,15 @@
 #include <kittycat.h>
 
+void autoLightsON() {
+    autoLights = true;
+    timerLight.start();
+}
+
+void autoLightsOFF() {
+    autoLights = false;
+    timerLight.stop();
+}
+
 void autoEstarON() {
     autoEstar = true;
 }
@@ -14,6 +24,16 @@ void autoJantarON() {
 
 void autoJantarOFF() {
     autoJantar = false;
+}
+
+void autoHeatON() {
+    autoHeat = true;
+    timerRelay.start();
+}
+
+void autoHeatOFF() {
+    autoHeat = false;
+    timerRelay.stop();
 }
 
 void newTemp20() {

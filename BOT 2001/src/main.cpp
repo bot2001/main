@@ -34,10 +34,14 @@ void setup() {
   toDo();
 
   server.on("/", handleRoot);
+  server.on("/luzON", autoLightsON);
+  server.on("/luzOFF", autoLightsOFF);
   server.on("/estarON", autoEstarON);
   server.on("/estarOFF", autoEstarOFF);
   server.on("/jantarON", autoJantarON);
   server.on("/jantarOFF", autoJantarOFF);
+  server.on("/aquecON", autoHeatON);
+  server.on("/aquecOFF", autoHeatOFF);
   server.on("/20", newTemp20);
   server.on("/21", newTemp21);
   server.on("/22", newTemp22);
