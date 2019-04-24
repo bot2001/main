@@ -17,6 +17,10 @@ void handleRoot() {
   server.send(200, "text/html", MAIN_page);
 }
 
+void notFound() {
+  server.send(404, "text/plain", "oops");
+}
+
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, password);
@@ -93,9 +97,22 @@ void setup() {
   server.on("/d5OFF", d5OFF);
   server.on("/d6ON", d6ON);
   server.on("/d6OFF", d6OFF);
+  server.onNotFound(notFound);
 }
 
 void loop() {
   toRefresh();
   server.handleClient();
+  if (server.client() == "") {
+    placaOn = false;
+    quartoOn = false;
+    banhoOn = false;
+    autoEstar = true;
+    autoJantar = true;
+    livingRoom = false;
+    kitchen = false;
+    bedroom = false;
+    bathroom = false;
+    temp = 25;
+  }
 }

@@ -9,7 +9,7 @@
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
-double temp;  // temperatura ideal
+double temp = 25;  // temperatura ideal
 double temp0; // baseline exterior
 double temp1; // sala
 double temp1Sum;
@@ -44,7 +44,6 @@ bool placaOn = false;
 bool quartoOn = false;
 bool banhoOn = false;
 
-bool autoHeat = true;
 const int relay1 = 2;
 const int relay2 = 19;
 const int relay3 = 21;
@@ -59,7 +58,6 @@ const int l1 = 39;
 int light1;
 int b = 0;
 
-bool autoLights = true;
 bool autoEstar = true;
 bool autoJantar = true;
 
@@ -192,10 +190,12 @@ void checkInput() {
   if (livingRoomStatus != livingRoom) {
     if (livingRoom) {
       placaOn = true;
+      digitalWrite(fire, HIGH);
       door(1, false);
     }
     else {
       placaOn = false;
+      digitalWrite(fire, LOW);
       door(1, true);
     }
     livingRoomStatus = livingRoom;
@@ -283,52 +283,106 @@ void checkLights() {
   b =+ 1;
   light0 =+ analogRead(l0);
   light1 =+ analogRead(l1);
-  if (b == 1200) {  // de dez em dez minutos
+  if (b == 60) {  // minuto a minuto
     light0 = light0/b;
     light1 = light1/b;
     b = 0;
     if (light0 > light0T) {
       door(7, true);
       // desligar as luzes
+      if (autoEstar) {
+        shift.set(6, LOW);
+      }
+      if (autoJantar) {
+        shift.set(7, LOW);
+      }
     }
     if (light1 < light1T) {
       door(7, false);
       // ligar as luzes
+      if (autoEstar) {
+        shift.set(6, HIGH);
+      }
+      if (autoJantar) {
+        shift.set(7, HIGH);
+      }
     }
   }
 }
 
 void cupboardF() {
-  shift.set(6, LOW);
+  shift.set(2, LOW);
 }
 
 void closetF() {
-  shift.set(7, LOW);
+  shift.set(1, LOW);
 }
 
 Ticker timerRelay(checkRelay, 1000, 0, MILLIS);
-Ticker timerLight(checkLights, 500, 0, MILLIS);
+Ticker timerLight(checkLights, 1000, 0, MILLIS);
 
-Ticker cupboard(cupboardF, 600000, 1, MILLIS);
-Ticker closet(closetF, 600000, 1, MILLIS);
+Ticker cupboard(cupboardF, 60000, 1, MILLIS);
+Ticker closet(closetF, 120000, 1, MILLIS);
 
 void light(int which, bool state) {
   if (state) {
-    shift.set(which, HIGH);
-    if (which == 6) {
-      cupboard.start();
-    }
-    if (which == 7) {
-      closet.start();
+    switch (which) {
+      case 0:
+        shift.set(0, HIGH);
+        break;
+      case 1:
+        shift.set(6, HIGH);
+        break;
+      case 2:
+        shift.set(7, HIGH);
+        break;
+      case 3:
+        shift.set(3, HIGH);
+        break;
+      case 4:
+        shift.set(4, HIGH);
+        break;
+      case 5:
+        shift.set(5, HIGH);
+        break;
+      case 6:
+        shift.set(2, HIGH);
+        cupboard.start();
+        break;
+      case 7:
+        shift.set(1, HIGH);
+        closet.start();
+        break;
     }
   }
   else {
-    shift.set(which, LOW);
-    if (which == 6) {
-      cupboard.stop();
-    }
-    if (which == 7) {
-      closet.stop();
+    switch (which) {
+      case 0:
+        shift.set(0, LOW);
+        break;
+      case 1:
+        shift.set(6, LOW);
+        break;
+      case 2:
+        shift.set(7, LOW);
+        break;
+      case 3:
+        shift.set(3, LOW);
+        break;
+      case 4:
+        shift.set(4, LOW);
+        break;
+      case 5:
+        shift.set(5, LOW);
+        break;
+      case 6:
+        shift.set(2, LOW);
+        cupboard.stop();
+        break;
+      case 7:
+        shift.set(1, LOW);
+        closet.stop();
+        break;
     }
   }
 }
@@ -360,7 +414,7 @@ void toDo() {
 }
 
 void toRefresh() {
-    sensors.requestTemperatures();
+  sensors.requestTemperatures();
   temp0 = sensors.getTempCByIndex(0);
   checkInput();
   if (timerRelay.state() == RUNNING) {

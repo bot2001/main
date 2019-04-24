@@ -1,12 +1,10 @@
 #include <kittycat.h>
 
 void autoLightsON() {
-    autoLights = true;
     timerLight.start();
 }
 
 void autoLightsOFF() {
-    autoLights = false;
     timerLight.stop();
 }
 
@@ -27,12 +25,10 @@ void autoJantarOFF() {
 }
 
 void autoHeatON() {
-    autoHeat = true;
     timerRelay.start();
 }
 
 void autoHeatOFF() {
-    autoHeat = false;
     timerRelay.stop();
 }
 
