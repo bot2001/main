@@ -58,6 +58,10 @@ const int l1 = 39;
 int light1;
 int b = 0;
 
+bool autoLights = true;
+bool autoEstar = true;
+bool autoJantar = true;
+
 ShiftRegister74HC595 shift(1, 26, 27, 25);
 
 bool livingRoom = false;
