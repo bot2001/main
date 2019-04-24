@@ -1,0 +1,36 @@
+BOT 2001
+
+Luzes automáticas (modo default é ativo)
+- Sala de estar
+- Sala de jantar
+Aquecimento automático (modo default é ativo)
+
+Temperatura exterior
+Slider temperatura
+
+Aquecimento: (modo default é off para todos)
+- Sala
+- Cozinha (aparece só se a sala estiver ativa)
+- Quarto
+- Casa de banho
+
+Luzes: (modo default é off para todos)
+- Hall de entrada
+- Sala de estar (so aparece se luzes automaticas inativo)
+- Sala de jantar (so aparece se luzes automaticas inativo)
+- Cozinha
+- Quarto
+- Casa de banho
+- Armário Hall
+- Guarda-vestidos
+
+Cortina (so aparece se luzes automaticas inativo, ver modo inicial no bool open7)
+
+Portas:
+- Entrada
+- Sala
+- Sala-cozinha
+- Cozinha
+- Quarto
+- Quarto-casa de banho
+- Casa de banho
