@@ -354,6 +354,9 @@ void toDo() {
   pinMode(relay3, OUTPUT);
 
   pinMode(fire, OUTPUT);
+
+  timerLight.start();
+  timerRelay.start();
 }
 
 void toRefresh() {
