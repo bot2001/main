@@ -185,6 +185,22 @@ function togglediv21() {
 	div2.style.display = div2.style.display == "none" ? "block" : "none";
 }
 </script>
+<script>
+function togglediv22() {
+    var div = document.getElementById('saladejantar');
+    div.style.display = div.style.display == "none" ? "block" : "none";
+    var div2 = 	document.getElementById('saladejantar2');
+	div2.style.display = div2.style.display == "none" ? "block" : "none";
+}
+</script>
+<script>
+function togglediv23() {
+    var div = document.getElementById('saladeestar');
+    div.style.display = div.style.display == "none" ? "block" : "none";
+    var div2 = 	document.getElementById('saladeestar2');
+	div2.style.display = div2.style.display == "none" ? "block" : "none";
+}
+</script>
 <style>
 html{font-family: Helvetica;
 	display: inline-block;
@@ -233,6 +249,22 @@ td{text-align: center;
 table{
   float:center;
   width:100%;}
+.button3{background:#4caf50;
+	width: 50px;
+    height: 40px;
+	border-radius: 5px;
+	color:#ffffff;
+	display:inline-block;
+	font:normal bold 24px/1 "Calibri", sans-serif;
+	text-align:center;}
+.button4{background:#555555;
+	width: 50px;
+    height: 40px;
+	border-radius: 5px;
+	color:#ffffff;
+	display:inline-block;
+	font:normal bold 24px/1 "Calibri", sans-serif;
+	text-align:center;}
 </style>
 </head>
 <body style="background-color: #282c34">
@@ -250,12 +282,14 @@ table{
 </tr>
 <tr>
 	<td>
-        <div id="salas">Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;<input style="height: 26px; width:26px; margin-left:0" value="" checked="" type="checkbox"></div>
+        <div id="saladeestar">Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;<a href="/estarON"><button onclick="togglediv23()" class="button button3">ON</button></a></div>
+       <div id="saladeestar2" style="display:none">Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;<a href="/estarOFF"><button onclick="togglediv23()" class="button button4">OFF</button></a></div>
     </td>
 </tr>
 <tr>
 	<td>
-       <div id="salas2"> Sala de jantar&nbsp;&nbsp;&nbsp;&nbsp;<input style="height: 26px; width:26px; margin-left:0" value="" checked="" type="checkbox"></div>
+    	<div id="saladejantar">Sala de jantar &nbsp;&nbsp;&nbsp;<a href="/jantarON"><button onclick="togglediv22()" class="button button3">ON</button></a></div>
+       <div id="saladejantar2" style="display:none">Sala de jantar &nbsp;&nbsp;&nbsp;<a href="/jantarOFF"><button onclick="togglediv22()" class="button button4">OFF</button></a></div>
     </td>
  </tr>
  <tr>
