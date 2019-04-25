@@ -47,6 +47,46 @@ function replace() {
 }
 replace();
 </script>
+<script>
+function togglediv() {
+    var div = document.getElementById('autolight');
+    div.style.display = div.style.display == "none" ? "block" : "none";
+    var div2 = 	document.getElementById('autolight2');
+	div2.style.display = div2.style.display == "none" ? "block" : "none";
+}
+</script>
+<script>
+function togglediv2() {
+    var div = document.getElementById('autoheating');
+    div.style.display = div.style.display == "none" ? "block" : "none";
+    var div2 = 	document.getElementById('autoheating2');
+	div2.style.display = div2.style.display == "none" ? "block" : "none";
+}
+</script>
+<script>
+var x = document.getElementById('autolight').style.display
+var y = document.getElementById('autolight2').style.display
+function receberluzes() {
+  localStorage.setItem("estadoluzon", x);
+  localStorage.setItem("estadoluzoff", y);
+  }
+</script>
+<script>
+var x = document.getElementById('autoheating').style.display
+var y = document.getElementById('autoheating2').style.display
+function receberaquec() {
+  localStorage.setItem("estadoaquecon", x);
+  localStorage.setItem("estadoaquecoff", y);
+  }
+</script>
+<script>
+function enviarestados()
+document.getElementById('autolight').style.display=localStorage.getItem("estadoluzon");
+document.getElementById('autolight2').style.display=localStorage.getItem("estadoluzoff");
+document.getElementById('autoheating').style.display=localStorage.getItem("estadoaquecon");
+document.getElementById('autoheating2').style.display=localStorage.getItem("estadoaquecon");
+}
+</script>
 <style>
 html{font-family: Helvetica;
 	display: inline-block;
@@ -143,8 +183,8 @@ table{
 		Luzes Automáticas
 	</th>
 	<td>
-		<p><a href="/luzON"><button class="button" >ON</button></a>
-    	<a href="/luzOFF"><button class="button button2">OFF</button></a></p>
+		<div id="autolight"><p><a href="/luzON"><button class="button" onclick="togglediv();receberluzes()">ON</button></a></div>
+    	<div id="autolight2" style="display:none"><p><a href="/luzOFF"><button class="button button2" onclick="togglediv()">OFF</button></a></div>
         
 	</td>
 </tr>
@@ -163,8 +203,8 @@ table{
 		Aquecimento Automático
 	</th>
 	<td>
-		<p><a href="/aquecON"><button class="button" >ON</button></a>
-    	<a href="/aquecOFF"><button class="button button2">OFF</button></a></p>
+		<div id="autoheating"><p><a href="/aquecON"><button class="button" onclick="togglediv2();receberaquec()">ON</button></a></div>
+    	<div id="autoheating2" style="display:none"><p><a href="/aquecOFF"><button class="button button2" onclick="togglediv2()">OFF</button></a></div>
         
 	</td>
 </tr>
