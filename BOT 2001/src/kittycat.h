@@ -73,6 +73,20 @@ bool kitchenStatus = false;
 bool bedroomStatus = false;
 bool bathroomStatus = false;
 
+void door1F();
+void door2F();
+void door3F();
+void door4F();
+void door5F();
+void door6F();
+
+Ticker door1(door1F, 60000, 1, MILLIS);
+Ticker door2(door2F, 60000, 1, MILLIS);
+Ticker door3(door3F, 60000, 1, MILLIS);
+Ticker door4(door4F, 60000, 1, MILLIS);
+Ticker door5(door5F, 60000, 1, MILLIS);
+Ticker door6(door6F, 60000, 1, MILLIS);
+
 void door(int door, bool state) {
   switch (door) {
     case 0:
@@ -91,11 +105,13 @@ void door(int door, bool state) {
       if (state) {
         if (servo3.read() != 55) {
           servo3.write(55);
+          if (kitchen) { door3.start(); }
         }
       }
       else {
         if (servo3.read() != 150) {
           servo3.write(150);
+          if (door3.state() == RUNNING) { door3.stop(); }
         }
       }    
     break;
@@ -103,11 +119,13 @@ void door(int door, bool state) {
       if (state) {
         if (servo4.read() != 25) {
           servo4.write(25);
+          if (bedroom) { door4.start(); }
         }
       }
       else {
         if (servo4.read() != 133) {
           servo4.write(133);
+          if (door4.state() == RUNNING) { door4.stop(); }
         }
       }
     break;
@@ -115,11 +133,13 @@ void door(int door, bool state) {
       if (state) {
         if (servo5.read() != 131) {
           servo5.write(131);
+          if (bedroom || bathroom) { door5.start(); }
         }
       }
       else {
         if (servo5.read() != 40) {
           servo5.write(40);
+          if (door5.state() == RUNNING) { door5.stop(); }
         }
       }
     break;
@@ -127,11 +147,13 @@ void door(int door, bool state) {
       if (state) {
         if (servo6.read() != 55) {
           servo6.write(55);
+          if (bathroom) { door6.start(); }
         }
       }
       else {
         if (servo6.read() != 150) {
           servo6.write(150);
+          if (door6.state() == RUNNING) { door6.stop(); }
         }
       }
     break;
@@ -141,13 +163,15 @@ void door(int door, bool state) {
           digitalWrite(m1a, HIGH);
           delay(3500);
           digitalWrite(m1a, LOW);
+          if (livingRoom) { door1.start(); }
         }
       }
       else {
         if (open1) {
           digitalWrite(m1b, HIGH);
           delay(3500);
-          digitalWrite(m1b, LOW);          
+          digitalWrite(m1b, LOW);   
+          if (door1.state() == RUNNING) { door1.stop(); }       
         }
       }
     break;
@@ -157,13 +181,15 @@ void door(int door, bool state) {
           digitalWrite(m2a, HIGH);
           delay(4300);
           digitalWrite(m2a, LOW);
+          if (livingRoom && !kitchen) { door2.start(); }
         }
       }
       else {
         if (open2) {
           digitalWrite(m2b, HIGH);
           delay(5000);
-          digitalWrite(m2b, LOW);          
+          digitalWrite(m2b, LOW);
+          if (door2.state() == RUNNING) { door2.stop(); }          
         }
       }
     break;
@@ -184,6 +210,25 @@ void door(int door, bool state) {
       }
     break;
   }
+}
+
+void door1F() {
+  door(1, false);
+}
+void door2F() {
+  door(2, false);
+}
+void door3F() {
+  door(3, false);
+}
+void door4F() {
+  door(4, false);
+}
+void door5F() {
+  door(5, false);
+}
+void door6F() {
+  door(6, false);
 }
 
 void checkInput() {
@@ -428,5 +473,23 @@ void toRefresh() {
   }
   if (closet.state() == RUNNING) {
     closet.update();
+  }
+  if (door1.state() == RUNNING) {
+    door1.update();
+  }
+  if (door2.state() == RUNNING) {
+    door2.update();
+  }
+  if (door3.state() == RUNNING) {
+    door3.update();
+  }
+  if (door4.state() == RUNNING) {
+    door4.update();
+  }
+  if (door5.state() == RUNNING) {
+    door5.update();
+  }
+  if (door6.state() == RUNNING) {
+    door6.update();
   }
 }
