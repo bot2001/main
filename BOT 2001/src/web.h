@@ -340,7 +340,7 @@ table{
  <th colspan="3">
  	<div class="alert" id="alert2" style="display:none;">
   <span class="closebtn" id="alert" style="display:none;" onclick="this.parentElement.style.display='none';">&times;</span> 
-  <strong>Atenção!</strong>A luz irá desligar-se dentro de 30 segundos. 
+  <strong>Atenção! </strong>A luz irá desligar-se dentro de 1 minuto. 
 </div>
 </th>
 </tr>
@@ -358,7 +358,7 @@ table{
 <th colspan="3">
  	<div class="alert" id="alert3" style="display:none;">
   <span class="closebtn" id="alert4" style="display:none;" onclick="this.parentElement.style.display='none';">&times;</span> 
-  <strong>Atenção!</strong>A luz irá desligar-se dentro de 30 segundos. 
+  <strong>Atenção! </strong>A luz irá desligar-se dentro de 2 minutos. 
 </div>
 </tr>
 <tr>
