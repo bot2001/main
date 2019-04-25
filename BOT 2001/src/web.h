@@ -126,6 +126,13 @@ table{
   transition: 0.3s;}
   .closebtn:hover {
   color: black;}
+.button5{background-color: #4CAF50;
+	border: none;
+	color: white;
+	width: 200px;
+    height: 70px;
+    text-align: center;
+	text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}
 </style>
 </head>
 <body style="background-color: #282c34">
@@ -166,7 +173,7 @@ table{
 		Temperatura Exterior
     </th>
     <td>
-    	"Colocar Valor do Sensor"
+    	<p><a href="/temp"><button class="button button5" onclick="notifier()" >Get Temperature</button></a>
     </td>
 </tr>
 <tr>
