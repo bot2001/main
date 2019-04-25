@@ -7,6 +7,23 @@
 
 #include <web.h>
 
+#include <string>
+#include <cstring>
+#include <sstream>
+#include <iostream>
+
+std::string to_string(double x)
+{
+  std::ostringstream ss;
+  ss << x;
+  return ss.str();
+}
+
+std::string tempValue = to_string(temp0); //segundo reza a lenda, isto é uma string correspondente ao valor do temp0
+
+const char MAIN_page[] = R"=====(
+)=====";
+
 WebServer server(80);
 
 char* ssid = "minedu";
@@ -23,15 +40,6 @@ void notFound() {
 void handleTemp() {
   sensors.requestTemperatures();
   temp0 = sensors.getTempCByIndex(0);
-  char thing[] = "
-<!DOCTYPE html>
-<html>
-<head><script>
-function notifier() {
-  alert("Temperatura atual : temp0 ºC ");
-}
-</script></head></html>";
-  server.send(200, "text/html", thing);
 }
 
 void setup() {
@@ -117,16 +125,4 @@ void setup() {
 void loop() {
   toRefresh();
   server.handleClient();
-  if (server.client() == "") {
-    placaOn = false;
-    quartoOn = false;
-    banhoOn = false;
-    autoEstar = true;
-    autoJantar = true;
-    livingRoom = false;
-    kitchen = false;
-    bedroom = false;
-    bathroom = false;
-    temp = 25;
-  }
 }
