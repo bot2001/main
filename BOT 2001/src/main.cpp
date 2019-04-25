@@ -2,7 +2,6 @@
 
 #include <Handles.h>
 
-#include <WiFiGeneric.h>
 #include <WebServer.h>
 #include <WiFiAP.h>
 
@@ -19,6 +18,13 @@ void handleRoot() {
 
 void notFound() {
   server.send(404, "text/plain", "oops");
+}
+
+void handleTemp() {
+  sensors.requestTemperatures();
+  temp0 = sensors.getTempCByIndex(0);
+  char thing[] = "mete o codigo html para o notifier aqui";
+  server.send(200, "text/html", thing);
 }
 
 void setup() {
@@ -38,6 +44,7 @@ void setup() {
   toDo();
 
   server.on("/", handleRoot);
+  server.on("/temp", handleTemp);
   server.on("/luzON", autoLightsON);
   server.on("/luzOFF", autoLightsOFF);
   server.on("/estarON", autoEstarON);

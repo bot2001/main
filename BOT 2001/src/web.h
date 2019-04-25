@@ -24,7 +24,7 @@ function replace() {
     var aEl = document.getElementById('replace');
     if (document.getElementById("range").textContent == "20"){
     aEl.href = "/20";}
-	  else if(document.getElementById("range").textContent == "21"){
+	else if(document.getElementById("range").textContent == "21"){
     aEl.href = "/21";}
     else if(document.getElementById("range").textContent == "22"){
     aEl.href = "/22";}
@@ -47,7 +47,6 @@ function replace() {
 }
 replace();
 </script>
-
 <style>
 html{font-family: Helvetica;
 	display: inline-block;
@@ -298,7 +297,6 @@ table{
 </div>
 </th>
 </tr>
-
 </div>
 </tr>
 <tr>

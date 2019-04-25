@@ -1,4 +1,4 @@
-#include <kittycat.h>
+#include <Kittycat.h>
 
 void autoLightsON() {
     timerLight.start();
