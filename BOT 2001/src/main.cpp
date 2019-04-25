@@ -23,7 +23,11 @@ void notFound() {
 void handleTemp() {
   sensors.requestTemperatures();
   temp0 = sensors.getTempCByIndex(0);
-  char thing[] = "mete o codigo html para o notifier aqui";
+  char thing[] = "<script>
+function notifier() {
+  alert("Temperatura atual : temp0 ºC ");
+}
+</script>";
   server.send(200, "text/html", thing);
 }
 
