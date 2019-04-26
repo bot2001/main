@@ -10,7 +10,7 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 double temp = 25;  // temperatura ideal
-double temp0; // baseline exterior
+int temp0; // baseline exterior
 double temp1; // sala
 double temp1Sum;
 double temp2; // quarto
@@ -303,22 +303,22 @@ void checkRelay() {
     temp3 = temp3Sum/n;
     n = 0;
     if (placaOn && temp1<temp) {
-      digitalWrite(relay1, HIGH);
-    }
-    else {
       digitalWrite(relay1, LOW);
     }
-    if (quartoOn && temp2<temp) {
-      digitalWrite(relay2, HIGH);
-    }
     else {
+      digitalWrite(relay1, HIGH);
+    }
+    if (quartoOn && temp2<temp) {
       digitalWrite(relay2, LOW);
     }
+    else {
+      digitalWrite(relay2, HIGH);
+    }
     if (banhoOn && temp3<temp) {
-      digitalWrite(relay3, HIGH);
+      digitalWrite(relay3, LOW);
     }
     else {
-      digitalWrite(relay3, LOW);
+      digitalWrite(relay3, HIGH);
     }
   }
 
