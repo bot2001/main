@@ -1,3 +1,8 @@
+// professora
+// o erro está na função handleTemp
+// tem uma chamada a server.on(200, "text/html", "Temperatura");
+// na temperatura falta então pôr o valor correspondente ao int temp0
+
 #include <Arduino.h>
 #include <kittycat.h>
 
