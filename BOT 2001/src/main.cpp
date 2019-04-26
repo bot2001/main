@@ -1,8 +1,3 @@
-// professora
-// o erro está na função handleTemp
-// tem uma chamada a server.on(200, "text/html", "Temperatura");
-// na temperatura falta então pôr o valor correspondente ao int temp0
-
 #include <Arduino.h>
 #include <kittycat.h>
 
@@ -18,6 +13,7 @@ const char MAIN_page[] = R"=====(
 <!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv=”refresh” content=”5" />
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
 <title>BOT 2001 Control Page</title>
 <link rel=\"icon\" href=\"data:,\">
