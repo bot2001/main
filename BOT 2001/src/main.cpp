@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <kittycat.h>
 
 #include <WebServer.h>
 #include <WiFiAP.h>
@@ -8,513 +7,845 @@
 #include <cstring>
 #include <sstream>
 #include <iostream>
+#include <stdio.h>
 
-const char MAIN_page[] = R"=====(
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv=”refresh” content=”5" />
-<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-<title>BOT 2001 Control Page</title>
-<link rel=\"icon\" href=\"data:,\">
-<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>
-<script src='https://code.jquery.com/jquery-3.1.1.slim.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js'></script>
-<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js'></script>
-<script>
-function alerta(){
-document.getElementById('alert').style.display='block'
-document.getElementById('alert2').style.display='block'}
-</script>
-<script>
-function alerta2(){
-document.getElementById('alert3').style.display='block'
-document.getElementById('alert4').style.display='block'}
-</script>
-<script  type="text/javascript">
-function replace() {
-    var aEl = document.getElementById('replace');
-    if (document.getElementById("range").textContent == "20"){
-    aEl.href = "/20";}
-	else if(document.getElementById("range").textContent == "21"){
-    aEl.href = "/21";}
-    else if(document.getElementById("range").textContent == "22"){
-    aEl.href = "/22";}
-    else if(document.getElementById("range").textContent == "23"){
-    aEl.href = "/23";}
-    else if(document.getElementById("range").textContent == "24"){
-    aEl.href = "/24";}
-    else if(document.getElementById("range").textContent == "25"){
-    aEl.href = "/25";}
-    else if(document.getElementById("range").textContent == "26"){
-    aEl.href = "/26";}
-    else if(document.getElementById("range").textContent == "27"){
-    aEl.href = "/27";}
-    else if(document.getElementById("range").textContent == "28"){
-    aEl.href = "/28";}
-    else if(document.getElementById("range").textContent == "29"){
-    aEl.href = "/29";}
-    else if(document.getElementById("range").textContent == "30"){
-    aEl.href = "/30";}
-}
-replace();
-</script>
-<script>
-function togglediv() {
-    var div = document.getElementById('autolight');
-    div.style.display = div.style.display == "none" ? "block" : "none";
-    var div2 = 	document.getElementById('autolight2');
-	div2.style.display = div2.style.display == "none" ? "block" : "none";
-}
-</script>
-<script>
-function togglediv2() {
-    var div = document.getElementById('autoheating');
-    div.style.display = div.style.display == "none" ? "block" : "none";
-    var div2 = 	document.getElementById('autoheating2');
-	div2.style.display = div2.style.display == "none" ? "block" : "none";
-}
-</script>
-<script>
-function togglesala() {
-    var div = document.getElementById('sala');
-    div.style.display = div.style.display == "none" ? "block" : "none";
-    var div2 = 	document.getElementById('sala2');
-	div2.style.display = div2.style.display == "none" ? "block" : "none";
-}
-</script>
-<script>
-function togglecozinha() {
-    var div = document.getElementById('cozinha');
-    div.style.display = div.style.display == "none" ? "block" : "none";
-    var div2 = 	document.getElementById('cozinha2');
-	div2.style.display = div2.style.display == "none" ? "block" : "none";
-}
-</script>
-<script>
-function togglequarto() {
-    var div = document.getElementById('quarto');
-    div.style.display = div.style.display == "none" ? "block" : "none";
-    var div2 = 	document.getElementById('quarto2');
-	div2.style.display = div2.style.display == "none" ? "block" : "none";
-}
-</script>
-<script>
-function togglebanho() {
-    var div = document.getElementById('banho');
-    div.style.display = div.style.display == "none" ? "block" : "none";
-    var div2 = 	document.getElementById('banho2');
-	div2.style.display = div2.style.display == "none" ? "block" : "none";
-}
-</script>
-<script>
-function receberluzes() {
-  localStorage.setItem("estadoluzon", document.getElementById('autolight').style.display);
-  localStorage.setItem("estadoluzoff", document.getElementById('autolight2').style.display);
-  }
-</script>
-<script>
-function receberaquec() {
-  localStorage.setItem("estadoaquecon", document.getElementById('autoheating').style.display);
-  localStorage.setItem("estadoaquecoff", document.getElementById('autoheating2').style.display);
-  }
-</script>
-<script>
-function receberluzes() {
-  localStorage.setItem("estadosalaon", document.getElementById('sala').style.display);
-  localStorage.setItem("estadosalaoff", document.getElementById('sala2').style.display);
-  }
-</script>
-<script>
-function receberluzes() {
-  localStorage.setItem("estadocozinhaon", document.getElementById('cozinha').style.display);
-  localStorage.setItem("estadocozinhaoff", document.getElementById('cozinha2').style.display);
-  }
-</script>
-<script>
-function receberluzes() {
-  localStorage.setItem("estadoquartoon", document.getElementById('quarto').style.display);
-  localStorage.setItem("estadoquartooff", document.getElementById('quarto2').style.display);
-  }
-</script>
-<script>
-function receberluzes() {
-  localStorage.setItem("estadobanhoon", document.getElementById('banho').style.display);
-  localStorage.setItem("estadobanhooff", document.getElementById('banho2').style.display);
-  }
-</script>
-<script>
-function enviarestados()
-document.getElementById('autolight').style.display=localStorage.getItem("estadoluzon");
-document.getElementById('autolight2').style.display=localStorage.getItem("estadoluzoff");
-document.getElementById('autoheating').style.display=localStorage.getItem("estadoaquecon");
-document.getElementById('autoheating2').style.display=localStorage.getItem("estadoaquecon");
-document.getElementById('sala').style.display=localStorage.getItem("estadosalaon");
-document.getElementById('sala2').style.display=localStorage.getItem("estadosalaoff");
-document.getElementById('cozinha').style.display=localStorage.getItem("estadocozinhaon");
-document.getElementById('cozinha2').style.display=localStorage.getItem("estadocozinhaoff");
-document.getElementById('quarto').style.display=localStorage.getItem("estadoquartoon");
-document.getElementById('quarto2').style.display=localStorage.getItem("estadoquartoon");
-document.getElementById('banho').style.display=localStorage.getItem("estadobanhoon");
-document.getElementById('banho2').style.display=localStorage.getItem("estadobanhooff");
-}
-</script>
-<style>
-html{font-family: Helvetica;
-	display: inline-block;
-	margin: 0px auto;
-	text-align: center;}
-body{margin:0;
-	padding:0;
-    color: #FFFFFF}
-.button{background-color: #4CAF50;
-	border: none;
-	color: white;
-	width: 120px;
-    height: 70px;
-    text-align: center;
-	text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}
-.button2{background-color: #555555;}
-.slider{
-  -webkit-appearance: none;
-  width: 50%;
-  height: 15px;
-  border-radius: 5px;   
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;}
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%; 
-  background: #4CAF50;
-  cursor: pointer;}  
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #4CAF50;
-  cursor: pointer;}
-th{font-size: 24px;
-  font-weight: bold;
-  text-align: center;}
-td{text-align: center;
-  font-size: 18px}
-table{
-  float:center;
-  width:100%;}
-.button3{background:#4caf50;
-	width: 50px;
-    height: 40px;
-	border-radius: 5px;
-	color:#ffffff;
-	display:inline-block;
-	font:normal bold 24px/1 "Calibri", sans-serif;
-	text-align:center;}
-.button4{background:#555555;
-	width: 50px;
-    height: 40px;
-	border-radius: 5px;
-	color:#ffffff;
-	display:inline-block;
-	font:normal bold 24px/1 "Calibri", sans-serif;
-	text-align:center;}
- .alert {
-  padding: 20px;
-  background-color: #f44336;
-  color: white;}
-  .closebtn {
-  margin-left: 15px;
-  color: white;
-  font-weight: bold;
-  float: right;
-  font-size: 22px;
-  line-height: 20px;
-  cursor: pointer;
-  transition: 0.3s;}
-  .closebtn:hover {
-  color: black;}
-.button5{background-color: #4CAF50;
-	border: none;
-	color: white;
-	width: 200px;
-    height: 70px;
-    text-align: center;
-	text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}
-</style>
-</head>
-<body style="background-color: #282c34">
-<h1>BOT 2001</h1>
-<table>
-<tr>
-	<th>
-		Auto-Luzes
-	</th>
-	<td>
-		<div id="autolight"><p><a href="/luzON"><button class="button" onclick="togglediv();receberluzes()">ON</button></a></div>
-    	<div id="autolight2" style="display:none"><p><a href="/luzOFF"><button class="button button2" onclick="togglediv()">OFF</button></a></div>
-        
-	</td>
-</tr>
-<tr>
-	<td>
-         Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;<a href="/estarON"><button class="button button3">ON</button></a><a href="/estarOFF"><button class="button button4">OFF</button></a>
-    </td>
-</tr>
-<tr>
-	<td>
-    	Sala de jantar&nbsp;&nbsp;&nbsp;&nbsp;<a href="/jantarON"><button class="button button3">ON</button></a><a href="/jantarOFF"><button class="button button4">OFF</button></a>
-    </td>
- </tr>
- <tr>
-	<th>
-		Auto-Aquecimento
-	</th>
-	<td>
-		<div id="autoheating"><p><a href="/aquecON"><button class="button" onclick="togglediv2();receberaquec()">ON</button></a></div>
-    	<div id="autoheating2" style="display:none"><p><a href="/aquecOFF"><button class="button button2" onclick="togglediv2()">OFF</button></a></div>
-        
-	</td>
-</tr>
-<tr>
-	<th>
-		Temperatura Exterior
-    </th>
-    <td>
-    	<p><a href="/temp"><button class="button button5">Get Temperature</button></a></p>
-    </td>
-</tr>
-<tr>
-	<td>
-		<p>
-	</td>
-</tr>
-<tr>
-	<th>
-		Temperatura
-	</th>
-	<td>
-		<input id="slider" type="range" min="20" max="30" value="25" step="1" class="slider" onchange="showValue(this.value); replace()" />
-			<span id="range">25</span>
-				<script type="text/javascript">
-					function showValue(newValue)
-					{
-					document.getElementById("range").innerHTML=newValue;
-					}
-				</script>
-                ºC&nbsp;&nbsp;<a id="replace" href="/25"><button class="button" >Submit</button></a>
-	</td>
-</tr>
-<th colspan="3">Aquecimento</th>
-<tr>
-	<th>
-    	Sala
-    </th>
-	<td>
-		<div id="sala" style="display:none"><p><a href="/salaON"><button class="button" onclick="togglesala()">ON</button></a></div>
-    	<div id="sala2"><p><a href="/salaOFF"><button class="button button2" onclick="togglesala()">OFF</button></a></div>
-	</td>
-</tr>
-<tr>
-	<th>
-    	Cozinha
-	</th>
-    <td>
-		<div id="cozinha" style="display:none"><p><a href="/cozinhaON"><button class="button" onclick="togglecozinha()">ON</button></a></div>
-    	<div id="cozinha2"><p><a href="/cozinhaOFF"><button class="button button2" onclick="togglecozinha()">OFF</button></a></div>
-	</td>
-</tr>
-<tr>
-	<th>
-    	Quarto
-	</th>
-	<td>
-		<div id="quarto" style="display:none"><p><a href="/quartoON"><button class="button" onclick="togglequarto()">ON</button></a></div>
-    	<div id="quarto2"><p><a href="/quartoOFF"><button class="button button2" onclick="togglequarto()">OFF</button></a></div>
-	</td>
-</tr>
-<tr>
-	<th>
-    	Casa de banho
-	</th>
-	<td>
-		<div id="banho" style="display:none"><p><a href="/banhoON"><button class="button" onclick="togglebanho()">ON</button></a></div>
-    	<div id="banho2"><p><a href="/banhoOFF"><button class="button button2" onclick="togglebanho()">OFF</button></a></div>
-	</td>
-</tr>
-<th colspan="3">Luzes</th>
-<tr>
-	<th>
-    	Hall de entrada
-    </th>
-	<td>
-		<p><a href="/l0ON"><button class="button" >ON</button></a>
-    	<a href="/l0OFF"><button class="button button2">OFF</button></a></p>
-	</td>
-</tr>
-<tr>
-	<th>
-    	<div  id="salas5">Sala de estar</div>
-    </th>
-	<td>
-		<p><a href="/l1ON"><button class="button" >ON</button></a>
-    	<a href="/l1OFF"><button class="button button2">OFF</button></a></p>
-	</td>
-</tr>
-<tr>
-	<th>
-    	Sala de jantar
-    </th>
-	<td>
-		<p><a href="/l2ON"><button class="button" >ON</button></a>
-    	<a href="/l2OFF"><button class="button button2">OFF</button></a></p>
-	</td>
-</tr>
-<tr>
-	<th>
-    	Cozinha
-    </th>
-	<td>
-		<p><a href="/l3ON"><button class="button" >ON</button></a>
-    	<a href="/l3OFF"><button class="button button2">OFF</button></a></p>
-	</td>
-</tr>
-<tr>
-	<th>
-    	Quarto
-    </th>
-	<td>
-		<p><a href="/l4ON"><button class="button" >ON</button></a>
-    	<a href="/l4OFF"><button class="button button2">OFF</button></a></p>
-	</td>
-</tr>
-<tr>
-	<th>
-    	Casa de banho
-    </th>
-	<td>
-		<p><a href="/l5ON"><button class="button" >ON</button></a>
-    	<a href="/l5OFF"><button class="button button2">OFF</button></a></p>
-	</td>
-</tr>
-<tr>
-	<th>
-    	Armário Hall
-    </th>
-	<td>
-		<p><a href="/l6ON"><button class="button" onclick="alerta()" >ON</button></a>
-	</td>
- <tr>   
- <th colspan="3">
- 	<div class="alert" id="alert2" style="display:none;">
-  <span class="closebtn" id="alert" style="display:none;" onclick="this.parentElement.style.display='none';">&times;</span> 
-  <strong>Atenção! </strong>A luz irá desligar-se dentro de 1 minuto. 
-</div>
-</th>
-</tr>
-</div>
-</tr>
-<tr>
-	<th>
-    	Guarda-vestidos
-    </th>
-	<td>
-		<p><a href="/l7ON"><button onclick="alerta2()" class="button" >ON</button></a>
-	</td>
-</tr>
-<tr>
-<th colspan="3">
- 	<div class="alert" id="alert3" style="display:none;">
-  <span class="closebtn" id="alert4" style="display:none;" onclick="this.parentElement.style.display='none';">&times;</span> 
-  <strong>Atenção! </strong>A luz irá desligar-se dentro de 2 minutos. 
-</div>
-</tr>
-<tr>
-	<th colspan="3"><div id="cortinas">Cortina</div></th>
-</tr>
-<tr>
-	<th colspan="3">
-		<p><a href="/cortinaON"><button class="button">OPEN</button></a>
-    <a href="/cortinaOFF"><button class="button button2">CLOSE</button></a></p>
-    </th>
-</tr>
-<tr>
-	<th colspan="3">Portas</th>
-</tr>
-<tr>
-	<th>
-    	Entrada
-    </th>
-    <td>
-		<p><a href="/d0ON"><button class="button">OPEN</button></a>
-    <a href="/d0OFF"><button class="button button2">CLOSE</button></a></p>
-	</td>
-</tr><tr>
-	<th>
-    	Sala 
-    </th>
-	<td>
-		<p><a href="/d1ON"><button class="button">OPEN</button></a>
-    <a href="/d1OFF"><button class="button button2">CLOSE</button></a></p>
-	</td>
-</tr><tr>
-	<th>
-    	Sala-cozinha
-    </th>
-	<td>
-		<p><a href="/d2ON"><button class="button">OPEN</button></a>
-    <a href="/d2OFF"><button class="button button2">CLOSE</button></a></p>
-	</td>
-</tr><tr>
-	<th>
-    	Cozinha
-    </th>
-	<td>
-		<p><a href="/d3ON"><button class="button">OPEN</button></a>
-    <a href="/d3OFF"><button class="button button2">CLOSE</button></a></p>
-	</td>
-</tr><tr>
-	<th>
-    	Quarto
-    </th>
-	<td>
-		<p><a href="/d4ON"><button class="button">OPEN</button></a>
-    <a href="/d4OFF"><button class="button button2">CLOSE</button></a></p>
-	</td>
-</tr><tr>
-	<th>
-    	Quarto-casa de banho
-    </th>
-	<td>
-		<p><a href="/d5ON"><button class="button">OPEN</button></a>
-    <a href="d5OFF"><button class="button button2">CLOSE</button></a></p>
-	</td>
-</tr><tr>
-	<th>
-    	Casa de banho
-    </th>
-	<td>
-		<p><a href="/d6ON"><button class="button">OPEN</button></a>
-    <a href="d6OFF"><button class="button button2">CLOSE</button></a></p>
-	</td>
-</tr>
-</table>
-</body>
-</html>
+#include <DallasTemperature.h>
+#include <Servo.h>
+#include <ShiftRegister74HC595.h>
+#include <Ticker.h>
 
-)=====";
+#define ONE_WIRE_BUS 15
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+int temp = 25;  // temperatura ideal
+double temp0; // baseline exterior
+double temp1; // sala
+double temp1Sum;
+double temp2; // quarto
+double temp2Sum;
+double temp3; // casa de banho
+double temp3Sum;
+int n = 0;
+
+bool open1 = false;
+const int m1a = 32;
+const int m1b = 33;
+bool open2 = false;
+const int m2a = 14;
+const int m2b = 12;
+bool open7 = false;
+const int m7a = 22;
+const int m7b = 23;
+
+Servo servo0;
+const int servo0pin = 4;
+bool open0 = false;
+Servo servo3;
+const int servo3pin = 16;
+bool open3 = false;
+Servo servo4;
+const int servo4pin = 17;
+bool open4 = false;
+Servo servo5;
+const int servo5pin = 5;
+bool open5 = false;
+Servo servo6;
+const int servo6pin = 18;
+bool open6 = false;
+
+bool placaOn = false;
+bool quartoOn = false;
+bool banhoOn = false;
+
+const int relay1 = 2;
+const int relay2 = 19;
+const int relay3 = 21;
+
+const int fire = 13;
+
+const int light0T = 600;
+const int l0 = 36;
+int light0 = 0;
+const int light1T = 500;
+const int l1 = 39;
+int light1 = 0;
+int b = 0;
+
+bool autoLights = true;
+bool autoEstar = true;
+bool autoJantar = true;
+
+ShiftRegister74HC595 shift(1, 26, 27, 25);
+
+bool autoHeat = true;
+bool livingRoom = false;
+bool kitchen = false;
+bool bedroom = false;
+bool bathroom = false;
+
+bool livingRoomStatus = false;
+bool kitchenStatus = false;
+bool bedroomStatus = false;
+bool bathroomStatus = false;
+
+bool on0 = false;
+bool on1 = false;
+bool on2 = false;
+bool on3 = false;
+bool on4 = false;
+bool on5 = false;
+
+void door1F();
+void door2F();
+void door3F();
+void door4F();
+void door5F();
+void door6F();
+
+Ticker door1(door1F, 60000, 1, MILLIS);
+Ticker door2(door2F, 60000, 1, MILLIS);
+Ticker door3(door3F, 60000, 1, MILLIS);
+Ticker door4(door4F, 60000, 1, MILLIS);
+Ticker door5(door5F, 60000, 1, MILLIS);
+Ticker door6(door6F, 60000, 1, MILLIS);
+
+void door(int door, bool state) {
+  switch (door) {
+    case 0:
+      if (state) {
+        if (!open0) {
+          servo0.write(70);
+          open0 = true;
+        }
+      }
+      else {
+        if (open0) {
+          servo0.write(160);
+          open0 = false;
+        }
+      }
+    break;
+    case 3:
+      if (state) {
+        if (!open3) {
+          servo3.write(55);
+          if (kitchen) { door3.start(); }
+          open3 = true;
+        }
+      }
+      else {
+        if (open3) {
+          servo3.write(150);
+          if (door3.state() == RUNNING) { door3.stop(); }
+          open3 = false;
+        }
+      }    
+    break;
+    case 4:
+      if (state) {
+        if (!open4) {
+          servo4.write(25);
+          if (bedroom) { door4.start(); }
+          open4 = true;
+        }
+      }
+      else {
+        if (open4) {
+          servo4.write(133);
+          if (door4.state() == RUNNING) { door4.stop(); }
+          open4 = false;
+        }
+      }
+    break;
+    case 5:
+      if (state) {
+        if (!open5) {
+          servo5.write(131);
+          if (bedroom || bathroom) { door5.start(); }
+          open5 = true;
+        }
+      }
+      else {
+        if (open5) {
+          servo5.write(40);
+          if (door5.state() == RUNNING) { door5.stop(); }
+          open5 = false;
+        }
+      }
+    break;
+    case 6:
+      if (state) {
+        if (!open6) {
+          servo6.write(55);
+          if (bathroom) { door6.start(); }
+          open6 = true;
+        }
+      }
+      else {
+        if (open6) {
+          servo6.write(150);
+          if (door6.state() == RUNNING) { door6.stop(); }
+          open6 = false;
+        }
+      }
+    break;
+    case 1:
+      if (state) {
+        if (!open1) {
+          digitalWrite(m1a, HIGH);
+          delay(3500);
+          digitalWrite(m1a, LOW);
+          if (livingRoom) { door1.start(); }
+          open1 = true;
+        }
+      }
+      else {
+        if (open1) {
+          digitalWrite(m1b, HIGH);
+          delay(3500);
+          digitalWrite(m1b, LOW);   
+          if (door1.state() == RUNNING) { door1.stop(); }
+          open1 = false;       
+        }
+      }
+    break;
+    case 2:
+      if (state) {
+        if (!open2) {
+          digitalWrite(m2a, HIGH);
+          delay(4300);
+          digitalWrite(m2a, LOW);
+          if (livingRoom && !kitchen) { door2.start(); }
+          open2 = true;
+        }
+      }
+      else {
+        if (open2) {
+          digitalWrite(m2b, HIGH);
+          delay(5000);
+          digitalWrite(m2b, LOW);
+          if (door2.state() == RUNNING) { door2.stop(); }
+          open2 = false;          
+        }
+      }
+    break;
+    case 7:
+      if (state) {
+        if (!open7) {
+          digitalWrite(m7a, HIGH);
+          delay(4000);
+          digitalWrite(m7a, LOW);
+          open7 = true;
+        }
+      }
+      else {
+        if (open7) {
+          digitalWrite(m7b, HIGH);
+          delay(3500);
+          digitalWrite(m7b, LOW);
+          open7 = false;          
+        }
+      }
+    break;
+  }
+}
+
+void door1F() {
+  door(1, false);
+}
+void door2F() {
+  door(2, false);
+}
+void door3F() {
+  door(3, false);
+}
+void door4F() {
+  door(4, false);
+}
+void door5F() {
+  door(5, false);
+}
+void door6F() {
+  door(6, false);
+}
+
+void checkInput() {
+  if (livingRoomStatus != livingRoom) {
+    if (livingRoom) {
+      placaOn = true;
+      digitalWrite(fire, HIGH);
+      door(1, false);
+    }
+    else {
+      placaOn = false;
+      digitalWrite(fire, LOW);
+      door(1, true);
+    }
+    livingRoomStatus = livingRoom;
+  }
+
+  if (kitchenStatus != kitchen) {
+    if (kitchen) {
+      door(2, true);
+      door(3, false);
+    }
+    else {
+      if (livingRoom) {
+        door(2, false);
+      }
+      else {
+        door(2, true);
+      }
+    }
+    kitchenStatus = kitchen;
+  }
+
+  if (bedroomStatus != bedroom) {
+    if (bedroom) {
+      quartoOn = true;
+      door(3, false);
+      door(6, false);
+    }
+    else {
+      quartoOn = false;
+    }
+    bedroomStatus = bedroom;
+  }
+
+  if (bathroomStatus != bathroom) {
+    if (bathroom) {
+      banhoOn = true;
+      door(5, false);
+      door(6, false);
+    }
+    else {
+      banhoOn = false;
+    }
+  }
+}
+
+void checkRelay() {
+  sensors.requestTemperatures();
+  temp1 = sensors.getTempCByIndex(1);
+  temp2 = sensors.getTempCByIndex(2);
+  temp3 = sensors.getTempCByIndex(3);
+
+  n =+ 1;
+  temp1Sum =+ temp1;
+  temp2Sum =+ temp2;
+  temp3Sum =+ temp3;
+
+  if (n == 30) {  // calcula a temperatura média a cada 30 segundos, para evitar flutuações
+    temp1 = temp1Sum/n;
+    temp2 = temp2Sum/n;
+    temp3 = temp3Sum/n;
+    n = 0;
+    if (placaOn && temp1<temp) {
+      digitalWrite(relay1, LOW);
+    }
+    else {
+      digitalWrite(relay1, HIGH);
+    }
+    if (quartoOn && temp2<temp) {
+      digitalWrite(relay2, LOW);
+    }
+    else {
+      digitalWrite(relay2, HIGH);
+    }
+    if (banhoOn && temp3<temp) {
+      digitalWrite(relay3, LOW);
+    }
+    else {
+      digitalWrite(relay3, HIGH);
+    }
+    temp1Sum = 0;
+    temp2Sum = 0;
+    temp3Sum = 0;
+  }
+
+}
+
+void checkLights() {
+  b =+ 1;
+  light0 =+ analogRead(l0);
+  light1 =+ analogRead(l1);
+  if (b == 60) {  // minuto a minuto
+    light0 = light0/b;
+    light1 = light1/b;
+    b = 0;
+    if (light0 > light0T) {
+      door(7, true);
+      // desligar as luzes
+      if (autoEstar) {
+        shift.set(6, LOW);
+      }
+      if (autoJantar) {
+        shift.set(7, LOW);
+      }
+    }
+    if (light1 < light1T) {
+      door(7, false);
+      // ligar as luzes
+      if (autoEstar) {
+        shift.set(6, HIGH);
+      }
+      if (autoJantar) {
+        shift.set(7, HIGH);
+      }
+    }
+    light0 = 0;
+    light1 = 0;
+  }
+}
+
+void cupboardF() {
+  shift.set(2, LOW);
+}
+
+void closetF() {
+  shift.set(1, LOW);
+}
+
+Ticker timerRelay(checkRelay, 1000, 0, MILLIS);
+Ticker timerLight(checkLights, 1000, 0, MILLIS);
+
+Ticker cupboard(cupboardF, 60000, 1, MILLIS);
+Ticker closet(closetF, 120000, 1, MILLIS);
+
+void light(int which, bool state) {
+  if (state) {
+    switch (which) {
+      case 0:
+        shift.set(0, HIGH);
+        on0 = true;
+        break;
+      case 1:
+        shift.set(6, HIGH);
+        on1 = true;
+        break;
+      case 2:
+        shift.set(7, HIGH);
+        on2 = true;
+        break;
+      case 3:
+        shift.set(3, HIGH);
+        on3 = true;
+        break;
+      case 4:
+        shift.set(4, HIGH);
+        on4 = true;
+        break;
+      case 5:
+        shift.set(5, HIGH);
+        on5 = true;
+        break;
+      case 6:
+        shift.set(2, HIGH);
+        cupboard.start();
+        break;
+      case 7:
+        shift.set(1, HIGH);
+        closet.start();
+        break;
+    }
+  }
+  else {
+    switch (which) {
+      case 0:
+        shift.set(0, LOW);
+        on0 = false;
+        break;
+      case 1:
+        shift.set(6, LOW);
+        on1 = false;
+        break;
+      case 2:
+        shift.set(7, LOW);
+        on2 = false;
+        break;
+      case 3:
+        shift.set(3, LOW);
+        on3 = false;
+        break;
+      case 4:
+        shift.set(4, LOW);
+        on4 = false;
+        break;
+      case 5:
+        shift.set(5, LOW);
+        on5 = false;
+        break;
+      case 6:
+        shift.set(2, LOW);
+        cupboard.stop();
+        break;
+      case 7:
+        shift.set(1, LOW);
+        closet.stop();
+        break;
+    }
+  }
+}
+
+void toDo() {
+  sensors.begin();
+
+  pinMode(m1a, OUTPUT);
+  pinMode(m1b, OUTPUT);
+  pinMode(m2a, OUTPUT);
+  pinMode(m2b, OUTPUT);
+  pinMode(m7a, OUTPUT);
+  pinMode(m7b, OUTPUT);
+
+  servo0.attach(servo0pin);
+  servo3.attach(servo3pin);
+  servo4.attach(servo4pin);
+  servo5.attach(servo5pin);
+  servo6.attach(servo6pin);
+
+  pinMode(relay1, OUTPUT);
+  pinMode(relay2, OUTPUT);
+  pinMode(relay3, OUTPUT);
+
+  pinMode(fire, OUTPUT);
+
+  timerLight.start();
+  timerRelay.start();
+}
+
+void toRefresh() {
+  sensors.requestTemperatures();
+  temp0 = sensors.getTempCByIndex(0);
+  checkInput();
+  if (timerRelay.state() == RUNNING) {
+    timerRelay.update();
+  }
+  if (timerLight.state() == RUNNING) {
+    timerLight.update();
+  }
+  if (cupboard.state() == RUNNING) {
+    cupboard.update();
+  }
+  if (closet.state() == RUNNING) {
+    closet.update();
+  }
+  if (door1.state() == RUNNING) {
+    door1.update();
+  }
+  if (door2.state() == RUNNING) {
+    door2.update();
+  }
+  if (door3.state() == RUNNING) {
+    door3.update();
+  }
+  if (door4.state() == RUNNING) {
+    door4.update();
+  }
+  if (door5.state() == RUNNING) {
+    door5.update();
+  }
+  if (door6.state() == RUNNING) {
+    door6.update();
+  }
+}
 
 WebServer server(80);
 
 char* ssid = "bot2001";
 char* password = "2001bot2001";
 
+String MAINpage = "";
+
+void updateHTML() {
+    MAINpage = "<!DOCTYPE html>";
+    MAINpage =+ "<html><head>";
+    MAINpage =+ "<meta name=\'viewport\' content=\'width=device-width, initial-scale=1\'>";
+    MAINpage =+ "<meta http-equiv='refresh' content='30'>";
+    MAINpage =+ "<title>BOT 2001 Control Page</title>";
+    MAINpage =+ "<link rel=\'icon\' href=\'data:,\'>";
+    MAINpage =+ "<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>";
+    MAINpage =+ "<script src='https://code.jquery.com/jquery-3.1.1.slim.min.js'></script>";
+    MAINpage =+ "<script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js'></script>";
+    MAINpage =+ "<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js'></script>";
+    MAINpage =+ "<script> ";
+    MAINpage =+ "function alerta(){";
+    MAINpage =+ "document.getElementById('alert').style.display='block'";
+    MAINpage =+ "document.getElementById('alert2').style.display='block'}";
+    MAINpage =+ "</script>";
+    MAINpage =+ "<script> ";
+    MAINpage =+ "function alerta2(){";
+    MAINpage =+ "document.getElementById('alert3').style.display='block'";
+    MAINpage =+ "document.getElementById('alert4').style.display='block'}";
+    MAINpage =+ "</script>";
+    MAINpage =+ "<script  type='text/javascript'> ";
+    MAINpage =+ "function replace() {";
+    MAINpage =+ "var aEl = document.getElementById('replace');";
+    MAINpage =+ "if (document.getElementById('range').textContent == '20'){";
+    MAINpage =+ "aEl.href = '/20';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '21'){";
+    MAINpage =+ "aEl.href = '/21';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '22'){";
+    MAINpage =+ "aEl.href = '/22';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '23'){";
+    MAINpage =+ "aEl.href = '/23';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '24'){";
+    MAINpage =+ "aEl.href = '/24';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '25'){";
+    MAINpage =+ "aEl.href = '/25';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '26'){";
+    MAINpage =+ "aEl.href = '/26';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '27'){";
+    MAINpage =+ "aEl.href = '/27';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '28'){";
+    MAINpage =+ "aEl.href = '/28';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '29'){";
+    MAINpage =+ "aEl.href = '/29';}";
+    MAINpage =+ "else if(document.getElementById('range').textContent == '30'){";
+    MAINpage =+ "aEl.href = '/30';}";
+    MAINpage =+ "}";
+    MAINpage =+ "replace();";
+    MAINpage =+ "</script>";
+    MAINpage =+ "<style>";
+    MAINpage =+ "html{font-family: Helvetica;display: inline-block;margin: 0px auto;text-align: center;}";
+    MAINpage =+ "body{margin:0;padding:0;color: #FFFFFF}";
+    MAINpage =+ ".button{background-color: #4CAF50;border: none;color: white;width: 120px;height: 70px;text-align: center;text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}";
+    MAINpage =+ ".button2{background-color: #555555;}";
+    MAINpage =+ ".slider{-webkit-appearance: none;width: 50%;height: 15px;border-radius: 5px;   background: #d3d3d3;outline: none;opacity: 0.7;-webkit-transition: .2s;transition: opacity .2s;}";
+    MAINpage =+ ".slider::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 25px;height: 25px;border-radius: 50%; background: #4CAF50;cursor: pointer;}  ";
+    MAINpage =+ ".slider::-moz-range-thumb {width: 25px;height: 25px;border-radius: 50%;background: #4CAF50;cursor: pointer;}";
+    MAINpage =+ "th{font-size: 24px;font-weight: bold;text-align: center;}";
+    MAINpage =+ "td{text-align: center;font-size: 18px}";
+    MAINpage =+ "table{float:center;width:100%;}";
+    MAINpage =+ ".button3{background:#4caf50;width: 50px;height: 40px;border-radius: 5px;color:#ffffff;display:inline-block;font:normal bold 24px/1 'Calibri', sans-serif;text-align:center;}";
+    MAINpage =+ ".button4{background:#555555;width: 50px;height: 40px;border-radius: 5px;color:#ffffff;display:inline-block;font:normal bold 24px/1 'Calibri', sans-serif;text-align:center;}";
+    MAINpage =+ " .alert {padding: 20px;background-color: #f44336;color: white;}";
+    MAINpage =+ " .closebtn {margin-left: 15px;color: white;font-weight: bold;float: right;font-size: 22px;line-height: 20px;cursor: pointer;transition: 0.3s;}";
+    MAINpage =+ " .closebtn:hover {color: black;}";
+    MAINpage =+ ".button5{background-color: #4CAF50;border: none;color: white;width: 200px;height: 70px;text-align: center;text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}";
+    MAINpage =+ "</style>";
+    MAINpage =+ "</head>";
+    MAINpage =+ "<body style='background-color: #282c34'>";
+    MAINpage =+ "<h1>BOT 2001</h1>";
+
+    MAINpage =+ "<table>";
+    MAINpage =+ "<tr><th>Luzes Automáticas</th><td>";
+    if (autoLights) {
+        MAINpage =+ "<p><a href='/luzOFF'><button class='button'>ON</button></a>";
+        MAINpage =+ "</td></tr>";
+        MAINpage =+ "<tr><td>Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;";        
+        if (autoEstar) {
+            MAINpage =+ "<a href='/estarOFF'><button class='button button3'>ON</button></a>";
+        }
+        else {
+            MAINpage =+ "<a href='/estarON'><button class='button button4'>OFF</button></a>"; 
+        }
+        MAINpage =+ "</td></tr>";
+        MAINpage =+ "<tr><td>Sala de jantar&nbsp;&nbsp;&nbsp;&nbsp;";
+        if (autoJantar) {
+            MAINpage =+ "<a href='/jantarOFF'><button class='button button3'>ON</button></a>";
+        }
+        else {
+            MAINpage =+ "<a href='/jantarON'><button class='button button4'>OFF</button></a>";         
+        }
+        MAINpage =+ "</td></tr>";   
+    }
+    else {
+        MAINpage =+ "<p><a href='/luzON'><button class='button button2'>OFF</button></a>";
+        MAINpage =+ "</td></tr>";   
+    }
+
+    MAINpage =+ "<tr><th>Aquecimento Automático</th><td>";
+    if (autoHeat) {
+        MAINpage =+ "<p><a href='/aquecOFF'><button class='button'>ON</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/aquecON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+
+    MAINpage =+ "<tr><th>Temperatura Exterior</th><td>";
+    MAINpage =+ "Temperatura exterior: ";
+    MAINpage =+ temp0;
+    MAINpage =+ " C";
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><td><p></td></tr>";
+    MAINpage =+ "<tr><th>Temperatura</th><td><input id='slider' type='range' min='20' max='30' value='";
+    MAINpage =+ temp;
+    MAINpage =+ "' step='1' class='slider' onchange='showValue(this.value); replace()'/><span id='range'> ";
+    MAINpage =+ temp;
+    MAINpage =+ "</span><script type='text/javascript'>function showValue(newValue){document.getElementById('range').innerHTML=newValue;}</script>&#8451;&nbsp;&nbsp;<a id='replace' href='/";
+    MAINpage =+ temp;
+    MAINpage =+ "'><button class='button' >Submit</button></a></td></tr>";
+    MAINpage =+ "<th colspan='3'>Aquecimento</th>";
+
+    MAINpage =+ "<tr><th>Sala</th><td>";
+    if (livingRoom) {
+        MAINpage =+ "<p><a href='/salaOFF'><button class='button' >ON</button></a>";
+        MAINpage =+ "</td></tr>";
+        MAINpage =+ "<tr><th>Cozinha</th><td>";       
+        if (kitchen) {
+            MAINpage =+ "<p><a href='/cozinhaOFF'><button class='button' >ON</button></a>";
+        }
+        else {
+            MAINpage =+ "<p><a href='/cozinhaON'><button class='button button2'>OFF</button></a>";    
+        }
+        MAINpage =+ "</td></tr>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/salaON'><button class='button button2'>OFF</button></a>";
+        MAINpage =+ "</td></tr>";
+    }
+    MAINpage =+ "<tr><th>Quarto</th><td>";
+    if (bedroom) {
+        MAINpage =+ "<p><a href='/quartoOFF'><button class='button' >ON</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/quartoON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Casa de banho</th><td>";
+    if (bathroom) {
+        MAINpage =+ "<p><a href='/banhoOFF'><button class='button' >ON</button></a>";    
+    }
+    else {
+        MAINpage =+ "<p><a href='/banhoON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+
+    MAINpage =+ "<th colspan='3'>Luzes</th>";
+    MAINpage =+ "<tr><th>Hall de entrada</th><td>";
+    if (on0) { 
+        MAINpage =+ "<p><a href='/l0OFF'><button class='button' >ON</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/l0ON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Sala de estar</th><td>";
+    if (on1) { 
+        MAINpage =+ "<p><a href='/l1OFF'><button class='button' >ON</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/l1ON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Sala de jantar</th><td>";
+    if (on2) { 
+        MAINpage =+ "<p><a href='/l2OFF'><button class='button' >ON</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/l2ON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Cozinha</th><td>";
+    if (on3) { 
+        MAINpage =+ "<p><a href='/l3OFF'><button class='button' >ON</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/l3ON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Quarto</th><td>";
+    if (on4) { 
+        MAINpage =+ "<p><a href='/l4OFF'><button class='button' >ON</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/l4ON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Casa de banho</th><td>";
+    if (on5) { 
+        MAINpage =+ "<p><a href='/l5OFF'><button class='button' >ON</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/l5ON'><button class='button button2'>OFF</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Armário Hall</th><td><p><a href='/l6ON'><button class='button' onclick='alerta()' >Turn ON</button></a></td></tr>";
+    MAINpage =+ "<tr><th colspan='3'><div class='alert' id='alert2' style='display:none;'><span class='closebtn' id='alert' style='display:none;' onclick='this.parentElement.style.display='none';'>&times;</span> <strong>Atenção! </strong>A luz irá desligar-se dentro de 1 minuto. </div></th></tr>";
+    MAINpage =+ "<tr><th>Guarda-vestidos</th><td><p><a href='/l7ON'><button onclick='alerta2()' class='button' >Turn ON</button></a></td></tr>";
+    MAINpage =+ "<tr><th colspan='3'><div class='alert' id='alert3' style='display:none;'><span class='closebtn' id='alert4' style='display:none;' onclick='this.parentElement.style.display='none';'>&times;</span> <strong>Atenção! </strong>A luz irá desligar-se dentro de 2 minutos. </div></tr>";
+    
+    MAINpage =+ "<tr><th colspan='3'>Cortina</th></tr>";
+    MAINpage =+ "<tr><th colspan='3'>";
+    if (open7) {
+        MAINpage =+ "<p><a href='/cortinaOFF'><button class='button'>OPEN</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/cortinaON'><button class='button button2'>CLOSE</button></a>";
+    }
+    MAINpage =+ "</th></tr>";
+
+    MAINpage =+ "<tr><th colspan='3'>Portas</th></tr>";
+    MAINpage =+ "<tr><th>Entrada</th><td>";
+    MAINpage =+ "";
+    if (open0) {
+        MAINpage =+ "<p><a href='/d0OFF'><button class='button'>OPEN</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/d0ON'><button class='button button2'>CLOSE</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Sala </th><td>";
+    if (open1) {
+        MAINpage =+ "<p><a href='/d1OFF'><button class='button'>OPEN</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/d1ON'><button class='button button2'>CLOSE</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Sala-cozinha</th><td>";
+    if (open2) {
+        MAINpage =+ "<p><a href='/d2OFF'><button class='button'>OPEN</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/d2ON'><button class='button button2'>CLOSE</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Cozinha</th><td>";
+    if (open3) {
+        MAINpage =+ "<p><a href='/d3OFF'><button class='button'>OPEN</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/d3ON'><button class='button button2'>CLOSE</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Quarto</th><td>";
+    if (open4) {
+        MAINpage =+ "<p><a href='/d4OFF'><button class='button'>OPEN</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='/d4ON'><button class='button button2'>CLOSE</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Quarto-casa de banho</th><td>";
+    if (open5) {
+        MAINpage =+ "<p><a href='/d5OFF'><button class='button'>OPEN</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='d5ON'><button class='button button2'>CLOSE</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+    MAINpage =+ "<tr><th>Casa de banho</th><td>";
+    if (open6) {
+        MAINpage =+ "<p><a href='/d6OFF'><button class='button'>OPEN</button></a>";
+    }
+    else {
+        MAINpage =+ "<p><a href='d6ON'><button class='button button2'>CLOSE</button></a>";
+    }
+    MAINpage =+ "</td></tr>";
+
+    MAINpage =+ "</table>";
+    MAINpage =+ "</body>";
+    MAINpage =+ "</html>";
+
+    server.send(200, "text/html", MAINpage);
+}
+
 void handleRoot() {
-  server.send(200, "text/html", MAIN_page);
+  updateHTML();
 }
 
 void notFound() {
@@ -522,294 +853,299 @@ void notFound() {
 }
 
 void handleTemp() {
-  server.send(200, "text/plain", "Temperatura");
-  delay(5000);
-  server.send(200, "text/html", MAIN_page);
+  updateHTML();
 }
 
 void autoLightsON() {
     timerLight.start();
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void autoLightsOFF() {
     timerLight.stop();
-    server.send(200, "text/html", MAIN_page);
+    b = 0;
+    light0 = 0;
+    light1 = 0;
+    updateHTML();
 }
 
 void autoEstarON() {
     autoEstar = true;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void autoEstarOFF() {
     autoEstar = false;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void autoJantarON() {
     autoJantar = true;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void autoJantarOFF() {
     autoJantar = false;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void autoHeatON() {
     timerRelay.start();
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void autoHeatOFF() {
     timerRelay.stop();
-    server.send(200, "text/html", MAIN_page);
+    n = 0;
+    temp1Sum = 0;
+    temp2Sum = 0;
+    temp3Sum = 0;
+    updateHTML();
 }
 
 void newTemp20() {
     temp = 20;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp21() {
     temp = 21;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp22() {
     temp = 22;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp23() {
     temp = 23;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp24() {
     temp = 24;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp25() {
     temp = 25;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp26() {
     temp = 26;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp27() {
     temp = 27;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp28() {
     temp = 28;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp29() {
     temp = 29;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 void newTemp30() {
     temp = 30;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void salaON() {
     livingRoom = true;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void salaOFF() {
     livingRoom = false;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void cozinhaON() {
     kitchen = true;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void cozinhaOFF() {
     kitchen = false;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void quartoON() {
     bedroom = true;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void quartoOFF() {
     bedroom = false;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void banhoON() {
     bathroom = true;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void banhoOFF() {
     bathroom = false;
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l0ON() {
     light(0, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l0OFF() {
     light(0, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l1ON() {
     light(1, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l1OFF() {
     light(1, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l2ON() {
     light(2, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l2OFF() {
     light(2, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l3ON() {
     light(3, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l3OFF() {
     light(3, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l4ON() {
     light(4, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l4OFF() {
     light(4, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l5ON() {
     light(5, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l5OFF() {
     light(5, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l6ON() {
     light(6, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l6OFF() {
     light(6, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l7ON() {
     light(7, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void l7OFF() {
     light(7, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void cortinaON() {
     door(7, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void cortinaOFF() {
     door(7, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d0ON() {
     door(0, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d0OFF() {
     door(0, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d1ON() {
     door(1, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d1OFF() {
     door(1, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d2ON() {
     door(2, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d2OFF() {
     door(2, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d3ON() {
     door(3, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d3OFF() {
     door(3, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d4ON() {
     door(4, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d4OFF() {
     door(4, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d5ON() {
     door(5, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d5OFF() {
     door(5, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d6ON() {
     door(6, true);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void d6OFF() {
     door(6, false);
-    server.send(200, "text/html", MAIN_page);
+    updateHTML();
 }
 
 void setup() {
