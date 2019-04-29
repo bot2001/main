@@ -30,11 +30,11 @@ double temp3Sum;
 int n = 0;
 
 bool open1 = true;
-const int m1a = 33;
-const int m1b = 32;
+const int m1a = 14;
+const int m1b = 12;
 bool open2 = true;
-const int m2a = 14;
-const int m2b = 12;
+const int m2a = 33;
+const int m2b = 32;
 bool open7 = false;
 const int m7a = 23;
 const int m7b = 22;
@@ -43,16 +43,16 @@ Servo servo0;
 const int servo0pin = 4;
 bool open0 = false;
 Servo servo3;
-const int servo3pin = 16;
+const int servo3pin = 17;
 bool open3 = false;
 Servo servo4;
-const int servo4pin = 17;
+const int servo4pin = 18;
 bool open4 = false;
 Servo servo5;
 const int servo5pin = 5;
 bool open5 = false;
 Servo servo6;
-const int servo6pin = 18;
+const int servo6pin = 16;
 bool open6 = false;
 
 bool placaOn = false;
@@ -65,10 +65,10 @@ const int relay3 = 19;
 
 const int fire = 13;
 
-const int light0T = 600;
+const int light0T = 1050;
 const int l0 = 36;
 int light0 = 0;
-const int light1T = 500;
+const int light1T = 950;
 const int l1 = 39;
 int light1 = 0;
 int b = 0;
@@ -131,7 +131,8 @@ void door(int door, bool state) {
       if (state) {
         if (!open3) {
           servo3.write(55);
-          if (kitchen) { door3.start(); }
+          if (kitchen) { door3.start();
+                        Serial.println("A porta da cozinha vai fechar"); }
           open3 = true;
         }
       }
@@ -147,7 +148,8 @@ void door(int door, bool state) {
       if (state) {
         if (!open4) {
           servo4.write(23);
-          if (bedroom) { door4.start(); }
+          if (bedroom) { door4.start(); 
+                        Serial.println("A porta do quarto vai fechar");}
           open4 = true;
         }
       }
@@ -163,7 +165,8 @@ void door(int door, bool state) {
       if (state) {
         if (!open5) {
           servo5.write(141);
-          if (bedroom || bathroom) { door5.start(); }
+          if (bedroom || bathroom) { door5.start();
+                                    Serial.println("A porta do quarto/casa de banho vai fechar"); }
           open5 = true;
         }
       }
@@ -179,7 +182,8 @@ void door(int door, bool state) {
       if (state) {
         if (!open6) {
           servo6.write(150);
-          if (bathroom) { door6.start(); }
+          if (bathroom) { door6.start();
+                        Serial.println("A porta da casa de banho vai fechar"); }
           open6 = true;
         }
       }
@@ -195,16 +199,17 @@ void door(int door, bool state) {
       if (state) {
         if (!open1) {
           digitalWrite(m1a, HIGH);
-          delay(3500);
+          delay(5000);
           digitalWrite(m1a, LOW);
-          if (livingRoom) { door1.start(); }
+          if (livingRoom) { door1.start(); 
+                          Serial.println("A porta da sala vai fechar"); }
           open1 = true;
         }
       }
       else {
         if (open1) {
           digitalWrite(m1b, HIGH);
-          delay(3500);
+          delay(5000);
           digitalWrite(m1b, LOW);   
           if (door1.state() == RUNNING) { door1.stop(); }
           open1 = false;       
@@ -215,9 +220,10 @@ void door(int door, bool state) {
       if (state) {
         if (!open2) {
           digitalWrite(m2a, HIGH);
-          delay(4300);
+          delay(5000);
           digitalWrite(m2a, LOW);
-          if (livingRoom && !kitchen) { door2.start(); }
+          if (livingRoom && !kitchen) { door2.start();
+                                      Serial.println("A porta da sala/cozinha vai fechar"); }
           open2 = true;
         }
       }
@@ -277,15 +283,16 @@ void checkInput() {
       placaOn = true;
       digitalWrite(fire, HIGH);
       door(1, false);
-if (! kitchen) {
-door(2, false);
-}
+      if (!kitchen) {
+        door(2, false);
+      }
     }
     else {
       placaOn = false;
       digitalWrite(fire, LOW);
       door(1, true);
-door(2, true);
+      door(2, true);
+      kitchen = false;
     }
     livingRoomStatus = livingRoom;
   }
@@ -334,28 +341,29 @@ door(2, true);
 void checkRelay() {
   Serial.println("Temperatures");
   sensors.requestTemperatures();
-  temp1 = sensors.getTempCByIndex(1);
+  temp1 = sensors.getTempCByIndex(3);
   temp2 = sensors.getTempCByIndex(2);
-  temp3 = sensors.getTempCByIndex(3);
+  temp3 = sensors.getTempCByIndex(0);
 
-  n =+ 1;
-  temp1Sum =+ temp1;
-  temp2Sum =+ temp2;
-  temp3Sum =+ temp3;
+  n = n + 1;
+  temp1Sum = temp1Sum + temp1;
+  temp2Sum = temp2Sum + temp2;
+  temp3Sum = temp3Sum + temp3;
+  Serial.println(n);
 
   if (n == 30) {  // calcula a temperatura média a cada 30 segundos, para evitar flutuações
     String output;
     temp1 = temp1Sum/n;
     output = "Temperatura 1: ";
-    output =+ temp1;
+    output += temp1;
     Serial.println(output);
     temp2 = temp2Sum/n;
     output = "Temperatura 2: ";
-    output =+ temp2;
+    output += temp2;
     Serial.println(output);
     temp3 = temp3Sum/n;
     output = "Temperatura 3: ";
-    output =+ temp3;
+    output += temp3;
     Serial.println(output);
     n = 0;
     if (placaOn && temp1<temp) {
@@ -385,18 +393,18 @@ void checkRelay() {
 
 void checkLights() {
   Serial.println("Lights");
-  b =+ 1;
-  light0 =+ analogRead(l0);
-  light1 =+ analogRead(l1);
+  b = b + 1;
+  light0 = light0 + analogRead(l0);
+  light1 = light0 + analogRead(l1);
   if (b == 60) {  // minuto a minuto
     String output;
     light0 = light0/b;
     output = "Luz 0: ";
-    output =+ light0;
+    output += light0;
     Serial.println(output);
     light1 = light1/b;
     output = "Luz 1: ";
-    output =+ light1;
+    output += light1;
     Serial.println(output);
     b = 0;
     if (light0 > light0T) {
@@ -446,11 +454,11 @@ void light(int which, bool state) {
         on0 = true;
         break;
       case 1:
-        shift.set(7, HIGH);
+        shift.set(6, HIGH);
         on1 = true;
         break;
       case 2:
-        shift.set(6, HIGH);
+        shift.set(7, HIGH);
         on2 = true;
         break;
       case 3:
@@ -482,11 +490,11 @@ void light(int which, bool state) {
         on0 = false;
         break;
       case 1:
-        shift.set(7, LOW);
+        shift.set(6, LOW);
         on1 = false;
         break;
       case 2:
-        shift.set(6, LOW);
+        shift.set(7, LOW);
         on2 = false;
         break;
       case 3:
@@ -545,7 +553,7 @@ void toDo() {
 
 void toRefresh() {
   sensors.requestTemperatures();
-  temp0 = sensors.getTempCByIndex(0);
+  temp0 = sensors.getTempCByIndex(1);
   checkInput();
   if (timerRelay.state() == RUNNING) {
     timerRelay.update();
@@ -581,293 +589,296 @@ void toRefresh() {
 
 WebServer server(80);
 
-char* ssid = "bot2001";
-char* password = "2001bot2001";
+char* ssid = "MEO-CA2C91";
+char* password = "A68245D251";
+
+//char* ssid = "bot2001";
+//char* password = "2001bot2001";
 
 String MAINpage = "";
 
 void updateHTML() {
     MAINpage = "<!DOCTYPE html>";
-    MAINpage =+ "<html><head>";
-    MAINpage =+ "<meta name=\'viewport\' content=\'width=device-width, initial-scale=1\'>";
-    MAINpage =+ "<meta http-equiv='refresh' content='30'>";
-    MAINpage =+ "<title>BOT 2001 Control Page</title>";
-    MAINpage =+ "<link rel=\'icon\' href=\'data:,\'>";
-    MAINpage =+ "<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>";
-    MAINpage =+ "<script src='https://code.jquery.com/jquery-3.1.1.slim.min.js'></script>";
-    MAINpage =+ "<script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js'></script>";
-    MAINpage =+ "<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js'></script>";
-    MAINpage =+ "<script> ";
-    MAINpage =+ "function alerta(){";
-    MAINpage =+ "document.getElementById('alert').style.display='block'";
-    MAINpage =+ "document.getElementById('alert2').style.display='block'}";
-    MAINpage =+ "</script>";
-    MAINpage =+ "<script> ";
-    MAINpage =+ "function alerta2(){";
-    MAINpage =+ "document.getElementById('alert3').style.display='block'";
-    MAINpage =+ "document.getElementById('alert4').style.display='block'}";
-    MAINpage =+ "</script>";
-    MAINpage =+ "<script  type='text/javascript'> ";
-    MAINpage =+ "function replace() {";
-    MAINpage =+ "var aEl = document.getElementById('replace');";
-    MAINpage =+ "if (document.getElementById('range').textContent == '20'){";
-    MAINpage =+ "aEl.href = '/20';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '21'){";
-    MAINpage =+ "aEl.href = '/21';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '22'){";
-    MAINpage =+ "aEl.href = '/22';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '23'){";
-    MAINpage =+ "aEl.href = '/23';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '24'){";
-    MAINpage =+ "aEl.href = '/24';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '25'){";
-    MAINpage =+ "aEl.href = '/25';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '26'){";
-    MAINpage =+ "aEl.href = '/26';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '27'){";
-    MAINpage =+ "aEl.href = '/27';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '28'){";
-    MAINpage =+ "aEl.href = '/28';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '29'){";
-    MAINpage =+ "aEl.href = '/29';}";
-    MAINpage =+ "else if(document.getElementById('range').textContent == '30'){";
-    MAINpage =+ "aEl.href = '/30';}";
-    MAINpage =+ "}";
-    MAINpage =+ "replace();";
-    MAINpage =+ "</script>";
-    MAINpage =+ "<style>";
-    MAINpage =+ "html{font-family: Helvetica;display: inline-block;margin: 0px auto;text-align: center;}";
-    MAINpage =+ "body{margin:0;padding:0;color: #FFFFFF}";
-    MAINpage =+ ".button{background-color: #4CAF50;border: none;color: white;width: 120px;height: 70px;text-align: center;text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}";
-    MAINpage =+ ".button2{background-color: #555555;}";
-    MAINpage =+ ".slider{-webkit-appearance: none;width: 50%;height: 15px;border-radius: 5px;   background: #d3d3d3;outline: none;opacity: 0.7;-webkit-transition: .2s;transition: opacity .2s;}";
-    MAINpage =+ ".slider::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 25px;height: 25px;border-radius: 50%; background: #4CAF50;cursor: pointer;}  ";
-    MAINpage =+ ".slider::-moz-range-thumb {width: 25px;height: 25px;border-radius: 50%;background: #4CAF50;cursor: pointer;}";
-    MAINpage =+ "th{font-size: 24px;font-weight: bold;text-align: center;}";
-    MAINpage =+ "td{text-align: center;font-size: 18px}";
-    MAINpage =+ "table{float:center;width:100%;}";
-    MAINpage =+ ".button3{background:#4caf50;width: 50px;height: 40px;border-radius: 5px;color:#ffffff;display:inline-block;font:normal bold 24px/1 'Calibri', sans-serif;text-align:center;}";
-    MAINpage =+ ".button4{background:#555555;width: 50px;height: 40px;border-radius: 5px;color:#ffffff;display:inline-block;font:normal bold 24px/1 'Calibri', sans-serif;text-align:center;}";
-    MAINpage =+ " .alert {padding: 20px;background-color: #f44336;color: white;}";
-    MAINpage =+ " .closebtn {margin-left: 15px;color: white;font-weight: bold;float: right;font-size: 22px;line-height: 20px;cursor: pointer;transition: 0.3s;}";
-    MAINpage =+ " .closebtn:hover {color: black;}";
-    MAINpage =+ ".button5{background-color: #4CAF50;border: none;color: white;width: 200px;height: 70px;text-align: center;text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}";
-    MAINpage =+ "</style>";
-    MAINpage =+ "</head>";
-    MAINpage =+ "<body style='background-color: #282c34'>";
-    MAINpage =+ "<h1>BOT 2001</h1>";
+    MAINpage += "<html><head>";
+    MAINpage += "<meta name=\'viewport\' content=\'width=device-width, initial-scale=1\'>";
+    MAINpage += "<meta http-equiv='refresh'content='30;url=/'>";
+    MAINpage += "<title>BOT 2001 Control Page</title>";
+    MAINpage += "<link rel=\'icon\' href=\'data:,\'>";
+    MAINpage += "<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>";
+    MAINpage += "<script src='https://code.jquery.com/jquery-3.1.1.slim.min.js'></script>";
+    MAINpage += "<script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js'></script>";
+    MAINpage += "<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js'></script>";
+    MAINpage += "<script> ";
+    MAINpage += "function alerta(){";
+    MAINpage += "document.getElementById('alert').style.display='block'";
+    MAINpage += "document.getElementById('alert2').style.display='block'}";
+    MAINpage += "</script>";
+    MAINpage += "<script> ";
+    MAINpage += "function alerta2(){";
+    MAINpage += "document.getElementById('alert3').style.display='block'";
+    MAINpage += "document.getElementById('alert4').style.display='block'}";
+    MAINpage += "</script>";
+    MAINpage += "<script  type='text/javascript'> ";
+    MAINpage += "function replace() {";
+    MAINpage += "var aEl = document.getElementById('replace');";
+    MAINpage += "if (document.getElementById('range').textContent == '20'){";
+    MAINpage += "aEl.href = '/20';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '21'){";
+    MAINpage += "aEl.href = '/21';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '22'){";
+    MAINpage += "aEl.href = '/22';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '23'){";
+    MAINpage += "aEl.href = '/23';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '24'){";
+    MAINpage += "aEl.href = '/24';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '25'){";
+    MAINpage += "aEl.href = '/25';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '26'){";
+    MAINpage += "aEl.href = '/26';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '27'){";
+    MAINpage += "aEl.href = '/27';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '28'){";
+    MAINpage += "aEl.href = '/28';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '29'){";
+    MAINpage += "aEl.href = '/29';}";
+    MAINpage += "else if(document.getElementById('range').textContent == '30'){";
+    MAINpage += "aEl.href = '/30';}";
+    MAINpage += "}";
+    MAINpage += "replace();";
+    MAINpage += "</script>";
+    MAINpage += "<style>";
+    MAINpage += "html{font-family: Helvetica;display: inline-block;margin: 0px auto;text-align: center;}";
+    MAINpage += "body{margin:0;padding:0;color: #FFFFFF}";
+    MAINpage += ".button{background-color: #4CAF50;border-radius: 5px; border: none;color: white;width: 120px;height: 70px;text-align: center;text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}";
+    MAINpage += ".button2{background-color: #555555;border-radius: 5px}";
+    MAINpage += ".slider{-webkit-appearance: none;width: 50%;height: 15px;border-radius: 5px;   background: #d3d3d3;outline: none;opacity: 0.7;-webkit-transition: .2s;transition: opacity .2s;}";
+    MAINpage += ".slider::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 25px;height: 25px;border-radius: 50%; background: #4CAF50;cursor: pointer;}  ";
+    MAINpage += ".slider::-moz-range-thumb {width: 25px;height: 25px;border-radius: 50%;background: #4CAF50;cursor: pointer;}";
+    MAINpage += "th{font-size: 24px;font-weight: bold;text-align: center;}";
+    MAINpage += "td{text-align: center;font-size: 18px}";
+    MAINpage += "table{float:center;width:100%;}";
+    MAINpage += ".button3{background:#4caf50;width: 50px;height: 40px;border-radius: 5px;color:#ffffff;display:inline-block;font:normal bold 24px/1 'Calibri', sans-serif;text-align:center;}";
+    MAINpage += ".button4{background:#555555;width: 50px;height: 40px;border-radius: 5px;color:#ffffff;display:inline-block;font:normal bold 24px/1 'Calibri', sans-serif;text-align:center;}";
+    MAINpage += " .alert {padding: 20px;background-color: #f44336;color: white;}";
+    MAINpage += " .closebtn {margin-left: 15px;color: white;font-weight: bold;float: right;font-size: 22px;line-height: 20px;cursor: pointer;transition: 0.3s;}";
+    MAINpage += " .closebtn:hover {color: black;}";
+    MAINpage += ".button5{background-color: #4CAF50;border: none;color: white;width: 200px;height: 70px;text-align: center;text-decoration: none; font-size: 25px; margin: 2px; cursor: pointer;}";
+    MAINpage += "</style>";
+    MAINpage += "</head>";
+    MAINpage += "<body style='background-color: #282c34'>";
+    MAINpage += "<h1>BOT 2001</h1>";
 
-    MAINpage =+ "<table>";
-    MAINpage =+ "<tr><th>Luzes Automáticas</th><td>";
+    MAINpage += "<table>";
+    MAINpage += "<tr><th>Luzes Autom&aacute;ticas</th><td>";
     if (autoLights) {
-        MAINpage =+ "<p><a href='/luzOFF'><button class='button'>ON</button></a>";
-        MAINpage =+ "</td></tr>";
-        MAINpage =+ "<tr><td>Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;";        
+        MAINpage += "<p><a href='/luzOFF'><button class='button'>ON</button></a>";
+        MAINpage += "</td></tr>";
+        MAINpage += "<tr><td>Sala de estar &nbsp;&nbsp;&nbsp;&nbsp;";        
         if (autoEstar) {
-            MAINpage =+ "<a href='/estarOFF'><button class='button button3'>ON</button></a>";
+            MAINpage += "<a href='/estarOFF'><button class='button button3'>ON</button></a>";
         }
         else {
-            MAINpage =+ "<a href='/estarON'><button class='button button4'>OFF</button></a>"; 
+            MAINpage += "<a href='/estarON'><button class='button button4'>OFF</button></a>"; 
         }
-        MAINpage =+ "</td></tr>";
-        MAINpage =+ "<tr><td>Sala de jantar&nbsp;&nbsp;&nbsp;&nbsp;";
+        MAINpage += "</td></tr>";
+        MAINpage += "<tr><td>Sala de jantar&nbsp;&nbsp;&nbsp;&nbsp;";
         if (autoJantar) {
-            MAINpage =+ "<a href='/jantarOFF'><button class='button button3'>ON</button></a>";
+            MAINpage += "<a href='/jantarOFF'><button class='button button3'>ON</button></a>";
         }
         else {
-            MAINpage =+ "<a href='/jantarON'><button class='button button4'>OFF</button></a>";         
+            MAINpage += "<a href='/jantarON'><button class='button button4'>OFF</button></a>";         
         }
-        MAINpage =+ "</td></tr>";   
+        MAINpage += "</td></tr>";   
     }
     else {
-        MAINpage =+ "<p><a href='/luzON'><button class='button button2'>OFF</button></a>";
-        MAINpage =+ "</td></tr>";   
+        MAINpage += "<p><a href='/luzON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "</td></tr>";   
     }
 
-    MAINpage =+ "<tr><th>Temperatura Exterior</th><td>";
-    MAINpage =+ "Temperatura exterior: ";
-    MAINpage =+ temp0;
-    MAINpage =+ " C";
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><td><p></td></tr>";
-    MAINpage =+ "<tr><th>Temperatura</th><td><input id='slider' type='range' min='20' max='30' value='";
-    MAINpage =+ temp;
-    MAINpage =+ "' step='1' class='slider' onchange='showValue(this.value); replace()'/><span id='range'> ";
-    MAINpage =+ temp;
-    MAINpage =+ "</span><script type='text/javascript'>function showValue(newValue){document.getElementById('range').innerHTML=newValue;}</script>&#8451;&nbsp;&nbsp;<a id='replace' href='/";
-    MAINpage =+ temp;
-    MAINpage =+ "'><button class='button' >Submit</button></a></td></tr>";
-    MAINpage =+ "<th colspan='3'>Aquecimento</th>";
+    MAINpage += "<tr><th>Temperatura Exterior</th><td>";
+    MAINpage += "Temperatura exterior: ";
+    MAINpage += temp0;
+    MAINpage += " &#8451;";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><td><p></td></tr>";
+    MAINpage += "<tr><th>Temperatura</th><td><input id='slider' type='range' min='20' max='30' value='";
+    MAINpage += temp;
+    MAINpage += "' step='1' class='slider' onchange='showValue(this.value); replace()'/><span id='range'> ";
+    MAINpage += temp;
+    MAINpage += "</span><script type='text/javascript'>function showValue(newValue){document.getElementById('range').innerHTML=newValue;}</script>&#8451;&nbsp;&nbsp;<a id='replace' href='/";
+    MAINpage += temp;
+    MAINpage += "'><button class='button' >Submit</button></a></td></tr>";
+    MAINpage += "<th colspan='3'>Aquecimento</th>";
 
-    MAINpage =+ "<tr><th>Aquecimento Automático</th><td>";
+    MAINpage += "<tr><th>Aquecimento Autom&aacute;tico</th><td>";
     if (autoHeat) {
-      MAINpage =+ "<p><a href='/aquecOFF'><button class='button'>ON</button></a>";
-      MAINpage =+ "</td></tr>";
-      MAINpage =+ "<tr><th>Sala</th><td>";
+      MAINpage += "<p><a href='/aquecOFF'><button class='button'>ON</button></a>";
+      MAINpage += "</td></tr>";
+      MAINpage += "<tr><th>Sala</th><td>";
       if (livingRoom) {
-        MAINpage =+ "<p><a href='/salaOFF'><button class='button' >ON</button></a>";
-        MAINpage =+ "</td></tr>";
-        MAINpage =+ "<tr><th>Cozinha</th><td>";       
+        MAINpage += "<p><a href='/salaOFF'><button class='button' >ON</button></a>";
+        MAINpage += "</td></tr>";
+        MAINpage += "<tr><th>Cozinha</th><td>";       
         if (kitchen) {
-          MAINpage =+ "<p><a href='/cozinhaOFF'><button class='button' >ON</button></a>";
+          MAINpage += "<p><a href='/cozinhaOFF'><button class='button' >ON</button></a>";
         }
         else {
-          MAINpage =+ "<p><a href='/cozinhaON'><button class='button button2'>OFF</button></a>";    
+          MAINpage += "<p><a href='/cozinhaON'><button class='button button2'>OFF</button></a>";    
         }
-        MAINpage =+ "</td></tr>";
+        MAINpage += "</td></tr>";
       }
       else {
-        MAINpage =+ "<p><a href='/salaON'><button class='button button2'>OFF</button></a>";
-        MAINpage =+ "</td></tr>";
+        MAINpage += "<p><a href='/salaON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "</td></tr>";
       }
-      MAINpage =+ "<tr><th>Quarto</th><td>";
+      MAINpage += "<tr><th>Quarto</th><td>";
       if (bedroom) {
-        MAINpage =+ "<p><a href='/quartoOFF'><button class='button' >ON</button></a>";
+        MAINpage += "<p><a href='/quartoOFF'><button class='button' >ON</button></a>";
       }
       else {
-        MAINpage =+ "<p><a href='/quartoON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "<p><a href='/quartoON'><button class='button button2'>OFF</button></a>";
       }       
-      MAINpage =+ "</td></tr>";
-      MAINpage =+ "<tr><th>Casa de banho</th><td>";
+      MAINpage += "</td></tr>";
+      MAINpage += "<tr><th>Casa de banho</th><td>";
       if (bathroom) {
-        MAINpage =+ "<p><a href='/banhoOFF'><button class='button' >ON</button></a>";    
+        MAINpage += "<p><a href='/banhoOFF'><button class='button' >ON</button></a>";    
       }
       else {
-        MAINpage =+ "<p><a href='/banhoON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "<p><a href='/banhoON'><button class='button button2'>OFF</button></a>";
       }
-      MAINpage =+ "</td></tr>";
+      MAINpage += "</td></tr>";
     }
     else {
-      MAINpage =+ "<p><a href='/aquecON'><button class='button button2'>OFF</button></a>";
-      MAINpage =+ "</td></tr>";
+      MAINpage += "<p><a href='/aquecON'><button class='button button2'>OFF</button></a>";
+      MAINpage += "</td></tr>";
     }
 
-    MAINpage =+ "<th colspan='3'>Luzes</th>";
-    MAINpage =+ "<tr><th>Hall de entrada</th><td>";
+    MAINpage += "<th colspan='3'>Luzes</th>";
+    MAINpage += "<tr><th>Hall de entrada</th><td>";
     if (on0) { 
-        MAINpage =+ "<p><a href='/l0OFF'><button class='button' >ON</button></a>";
+        MAINpage += "<p><a href='/l0OFF'><button class='button' >ON</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/l0ON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "<p><a href='/l0ON'><button class='button button2'>OFF</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Sala de estar</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Sala de estar</th><td>";
     if (on1) { 
-        MAINpage =+ "<p><a href='/l1OFF'><button class='button' >ON</button></a>";
+        MAINpage += "<p><a href='/l1OFF'><button class='button' >ON</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/l1ON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "<p><a href='/l1ON'><button class='button button2'>OFF</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Sala de jantar</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Sala de jantar</th><td>";
     if (on2) { 
-        MAINpage =+ "<p><a href='/l2OFF'><button class='button' >ON</button></a>";
+        MAINpage += "<p><a href='/l2OFF'><button class='button' >ON</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/l2ON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "<p><a href='/l2ON'><button class='button button2'>OFF</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Cozinha</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Cozinha</th><td>";
     if (on3) { 
-        MAINpage =+ "<p><a href='/l3OFF'><button class='button' >ON</button></a>";
+        MAINpage += "<p><a href='/l3OFF'><button class='button' >ON</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/l3ON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "<p><a href='/l3ON'><button class='button button2'>OFF</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Quarto</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Quarto</th><td>";
     if (on4) { 
-        MAINpage =+ "<p><a href='/l4OFF'><button class='button' >ON</button></a>";
+        MAINpage += "<p><a href='/l4OFF'><button class='button' >ON</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/l4ON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "<p><a href='/l4ON'><button class='button button2'>OFF</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Casa de banho</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Casa de banho</th><td>";
     if (on5) { 
-        MAINpage =+ "<p><a href='/l5OFF'><button class='button' >ON</button></a>";
+        MAINpage += "<p><a href='/l5OFF'><button class='button' >ON</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/l5ON'><button class='button button2'>OFF</button></a>";
+        MAINpage += "<p><a href='/l5ON'><button class='button button2'>OFF</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Armário Hall</th><td><p><a href='/l6ON'><button class='button' onclick='alerta()' >Turn ON</button></a></td></tr>";
-    MAINpage =+ "<tr><th colspan='3'><div class='alert' id='alert2' style='display:none;'><span class='closebtn' id='alert' style='display:none;' onclick='this.parentElement.style.display='none';'>&times;</span> <strong>Atenção! </strong>A luz irá desligar-se dentro de 1 minuto. </div></th></tr>";
-    MAINpage =+ "<tr><th>Guarda-vestidos</th><td><p><a href='/l7ON'><button onclick='alerta2()' class='button' >Turn ON</button></a></td></tr>";
-    MAINpage =+ "<tr><th colspan='3'><div class='alert' id='alert3' style='display:none;'><span class='closebtn' id='alert4' style='display:none;' onclick='this.parentElement.style.display='none';'>&times;</span> <strong>Atenção! </strong>A luz irá desligar-se dentro de 2 minutos. </div></tr>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Arm&aacute;rio Hall</th><td><p><a href='/l6ON'><button class='button' onclick='alerta()' >Turn ON</button></a></td></tr>";
+    MAINpage += "<tr><th colspan='3'><div class='alert' id='alert2' style='display:none;'><span class='closebtn' id='alert' style='display:none;' onclick='this.parentElement.style.display='none';'>&times;</span> <strong>Atenção! </strong>A luz irá desligar-se dentro de 1 minuto. </div></th></tr>";
+    MAINpage += "<tr><th>Guarda-vestidos</th><td><p><a href='/l7ON'><button onclick='alerta2()' class='button' >Turn ON</button></a></td></tr>";
+    MAINpage += "<tr><th colspan='3'><div class='alert' id='alert3' style='display:none;'><span class='closebtn' id='alert4' style='display:none;' onclick='this.parentElement.style.display='none';'>&times;</span> <strong>Atenção! </strong>A luz irá desligar-se dentro de 2 minutos. </div></tr>";
     
-    MAINpage =+ "<tr><th colspan='3'>Cortina</th></tr>";
-    MAINpage =+ "<tr><th colspan='3'>";
+    MAINpage += "<tr><th colspan='3'>Cortina</th></tr>";
+    MAINpage += "<tr><th colspan='3'>";
     if (open7) {
-        MAINpage =+ "<p><a href='/cortinaOFF'><button class='button'>OPEN</button></a>";
+        MAINpage += "<p><a href='/cortinaOFF'><button class='button'>OPEN</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/cortinaON'><button class='button button2'>CLOSE</button></a>";
+        MAINpage += "<p><a href='/cortinaON'><button class='button button2'>CLOSED</button></a>";
     }
-    MAINpage =+ "</th></tr>";
+    MAINpage += "</th></tr>";
 
-    MAINpage =+ "<tr><th colspan='3'>Portas</th></tr>";
-    MAINpage =+ "<tr><th>Entrada</th><td>";
-    MAINpage =+ "";
+    MAINpage += "<tr><th colspan='3'>Portas</th></tr>";
+    MAINpage += "<tr><th>Entrada</th><td>";
+    MAINpage += "";
     if (open0) {
-        MAINpage =+ "<p><a href='/d0OFF'><button class='button'>OPEN</button></a>";
+        MAINpage += "<p><a href='/d0OFF'><button class='button'>OPEN</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/d0ON'><button class='button button2'>CLOSE</button></a>";
+        MAINpage += "<p><a href='/d0ON'><button class='button button2'>CLOSED</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Sala </th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Sala </th><td>";
     if (open1) {
-        MAINpage =+ "<p><a href='/d1OFF'><button class='button'>OPEN</button></a>";
+        MAINpage += "<p><a href='/d1OFF'><button class='button'>OPEN</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/d1ON'><button class='button button2'>CLOSE</button></a>";
+        MAINpage += "<p><a href='/d1ON'><button class='button button2'>CLOSED</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Sala-cozinha</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Sala-cozinha</th><td>";
     if (open2) {
-        MAINpage =+ "<p><a href='/d2OFF'><button class='button'>OPEN</button></a>";
+        MAINpage += "<p><a href='/d2OFF'><button class='button'>OPEN</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/d2ON'><button class='button button2'>CLOSE</button></a>";
+        MAINpage += "<p><a href='/d2ON'><button class='button button2'>CLOSED</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Cozinha</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Cozinha</th><td>";
     if (open3) {
-        MAINpage =+ "<p><a href='/d3OFF'><button class='button'>OPEN</button></a>";
+        MAINpage += "<p><a href='/d3OFF'><button class='button'>OPEN</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/d3ON'><button class='button button2'>CLOSE</button></a>";
+        MAINpage += "<p><a href='/d3ON'><button class='button button2'>CLOSED</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Quarto</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Quarto</th><td>";
     if (open4) {
-        MAINpage =+ "<p><a href='/d4OFF'><button class='button'>OPEN</button></a>";
+        MAINpage += "<p><a href='/d4OFF'><button class='button'>OPEN</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='/d4ON'><button class='button button2'>CLOSE</button></a>";
+        MAINpage += "<p><a href='/d4ON'><button class='button button2'>CLOSED</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Quarto-casa de banho</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Quarto-casa de banho</th><td>";
     if (open5) {
-        MAINpage =+ "<p><a href='/d5OFF'><button class='button'>OPEN</button></a>";
+        MAINpage += "<p><a href='/d5OFF'><button class='button'>OPEN</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='d5ON'><button class='button button2'>CLOSE</button></a>";
+        MAINpage += "<p><a href='d5ON'><button class='button button2'>CLOSED</button></a>";
     }
-    MAINpage =+ "</td></tr>";
-    MAINpage =+ "<tr><th>Casa de banho</th><td>";
+    MAINpage += "</td></tr>";
+    MAINpage += "<tr><th>Casa de banho</th><td>";
     if (open6) {
-        MAINpage =+ "<p><a href='/d6OFF'><button class='button'>OPEN</button></a>";
+        MAINpage += "<p><a href='/d6OFF'><button class='button'>OPEN</button></a>";
     }
     else {
-        MAINpage =+ "<p><a href='d6ON'><button class='button button2'>CLOSE</button></a>";
+        MAINpage += "<p><a href='d6ON'><button class='button button2'>CLOSED</button></a>";
     }
-    MAINpage =+ "</td></tr>";
+    MAINpage += "</td></tr>";
 
-    MAINpage =+ "</table>";
-    MAINpage =+ "</body>";
-    MAINpage =+ "</html>";
+    MAINpage += "</table>";
+    MAINpage += "</body>";
+    MAINpage += "</html>";
 
     server.send(200, "text/html", MAINpage);
 }
