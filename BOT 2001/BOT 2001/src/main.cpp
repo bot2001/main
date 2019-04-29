@@ -283,11 +283,15 @@ void checkInput() {
       placaOn = true;
       digitalWrite(fire, HIGH);
       door(1, false);
+if (! kitchen) {
+door(2, false);
+}
     }
     else {
       placaOn = false;
       digitalWrite(fire, LOW);
       door(1, true);
+door(2, true);
     }
     livingRoomStatus = livingRoom;
   }
