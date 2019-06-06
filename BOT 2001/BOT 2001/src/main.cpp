@@ -315,7 +315,7 @@ door(2, true);
   if (bedroomStatus != bedroom) {
     if (bedroom) {
       quartoOn = true;
-      door(3, false);
+      door(4, false);
       door(6, false);
     }
     else {
